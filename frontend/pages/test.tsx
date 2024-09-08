@@ -258,7 +258,7 @@ const Home: React.FC = () => {
         <div className="flex w-full pt-10">
           <div className="flex w-1/4 justify-center items-center">
             <img
-              src="/dseu-logo.png"
+              src="/dseulogo.png"
               alt="DSEU-LOGO"
               className="w-[29%] h-[60%] "
             />
