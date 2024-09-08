@@ -339,6 +339,9 @@ const StudentDetails = () => {
                   30
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
+                  30
+                </div>
+                <div className="border flex-1 text-[10px] p-2 flex justify-center">
                   ABS
                 </div>
               </div>
