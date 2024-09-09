@@ -44,34 +44,103 @@ const fetchresult = async (req, res) => {
     console.log(roll_number,semester,acad_year)
 
     const batch = await pool.query(`SELECT batch FROM studentinfo WHERE roll_no = $1`, [roll_number]);
-    console.log("hehe",batch.rows[0].batch)
-    const query = `
-      SELECT 
-        s.*,
-        r.*,
-        c.course_name,
-        r.marks,
-        r.month_year
-      FROM 
-        studentinfo s
-      LEFT JOIN result r ON s.roll_no = r.roll_no
-      LEFT JOIN course c ON r.course_code = c.course_code
-      WHERE 
-        s.roll_no = $1 AND s.batch = $2 AND r.acad_year = $3 AND r.semester = $4
-        AND r.course_code NOT IN (
-          SELECT * FROM json_array_elements_text(s.blocked_result)
-        )
-    `;
-    const results = await pool.query(query, [
-      roll_number,
-      batch.rows[0].batch,  // Access the batch value correctly
-      acad_year,
-      semester
-    ]);
-    
+console.log("Batch: ", batch.rows[0].batch);
 
+const query = `
+  SELECT 
+    s.roll_no AS rollno,
+    s.name,
+    s.prog,
+    s.campus,
+    r.semester,
+    r.acad_year AS academic_year,
+    s.batch,
+    c.course_code,
+    c.course_name,
+    c.credit,
+    r.marks,
+    r.month_year
+  FROM 
+    studentinfo s
+  LEFT JOIN 
+    result r ON s.roll_no = r.roll_no
+  LEFT JOIN 
+    course c ON r.course_code = c.course_code
+  WHERE 
+    s.roll_no = $1 
+    AND s.batch = $2 
+    AND r.acad_year = $3 
+    AND r.semester = $4
+    AND r.course_code NOT IN (
+      SELECT * FROM json_array_elements_text(s.blocked_result)
+    )
+  ORDER BY 
+    s.roll_no, r.semester, c.course_code;
+`;
+
+const results = await pool.query(query, [
+  roll_number,
+  batch.rows[0].batch,
+  acad_year,
+  semester
+]);
+
+// Object to group students by their roll numbers
+const structuredResults = {};
+
+// Process each row and group by student and semester
+results.rows.forEach(row => {
+  const {
+    rollno,
+    name,
+    prog,
+    campus,
+    batch,
+    semester,
+    course_code,
+    course_name,
+    credit,
+    marks,
+    month_year
+  } = row;
+
+  // If the student doesn't exist in the structure, create an entry for them
+  if (!structuredResults[rollno]) {
+    structuredResults[rollno] = {
+      roll_no: rollno,
+      name,
+      prog,
+      campus,
+      batch,
+      semesters: {}
+    };
+  }
+
+  // If the semester doesn't exist for the student, create an entry for the semester
+  if (!structuredResults[rollno].semesters[semester]) {
+    structuredResults[rollno].semesters[semester] = {
+      semester,
+      courses: []
+    };
+  }
+
+  // Add the course details to the correct semester
+  structuredResults[rollno].semesters[semester].courses.push({
+    course_code,
+    course_name,
+    credit,
+    marks,
+    month_year
+  });
+});
+
+// Convert the student data into an array for easier access
+const resultArray = Object.values(structuredResults).map(student => ({
+  ...student,
+  semesters: Object.values(student.semesters)  // Convert semesters object to array
+}));
     // Return the results
-    res.json(results.rows);
+    res.json(resultArray[0]);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error finding data" });
