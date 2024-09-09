@@ -36,6 +36,9 @@ body {
   .print-only {
     display: block;
   }
+  * {
+    color: black !important; /* Ensure all text is black in the print view */
+  }
 
   .page-break {
     page-break-before: always;
