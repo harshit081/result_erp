@@ -57,30 +57,42 @@ function eval_grade(gp: number, credit : number) {
   }
 }
 
-function sgpa_calc(marks: Mark[]) {
-  let total_credit = 0;
-  let ci_pi = 0;
-  marks.map((mark) => {
-    total_credit += mark.grade_point? mark.credit : 0;
-    ci_pi += mark.credit * mark.grade_point;
-  });
-  return total_credit > 0 ? parseFloat((ci_pi / total_credit).toFixed(2)) : 0;
-}
-
 function eval_gp(marks: number | string | null) {
-  if(typeof marks === "number"){
-  if (marks >= 90) return 10;
-  else if (marks >= 80) return 9;
-  else if (marks >= 70) return 8;
-  else if (marks >= 60) return 7;
-  else if (marks >= 50) return 6;
-  else if (marks >= 45) return 5;
-  else if (marks >= 40) return 4;
+  if(marks === null) return -1;
+  if(typeof(marks) === "number" || !isNaN(parseFloat(marks))) {
+  let x = (typeof(marks) === "number"? marks : parseFloat(marks));
+  if (x >= 90) return 10;
+  else if (x >= 80) return 9;
+  else if (x >= 70) return 8;
+  else if (x >= 60) return 7;
+  else if (x >= 50) return 6;
+  else if (x >= 45) return 5;
+  else if (x >= 40) return 4;
   else return 0;
   }else{
     return -1;
   }
 }
+
+function tot_sem_cred(courses: Mark[]){
+  let total_credit = 0;
+  courses.forEach((course) => {
+    total_credit += parseFloat(course.credit.toString());
+  })
+  return total_credit;
+}
+
+
+function sgpa_calc(courses: Mark[]) {
+  let total_credit = 0;
+  let ci_pi = 0;
+  courses.forEach((course) => {
+    total_credit += (eval_gp(course.marks)? parseFloat(course.credit.toString()) : 0)
+    ci_pi += parseFloat(course.credit.toString()) * eval_gp(course.marks);
+  });
+  return total_credit > 0 ? parseFloat((ci_pi / total_credit).toFixed(2)) : 0;
+}
+
 
 function sem_grade(sgpa: number) {
   if (sgpa >= 9.5) return "O";
@@ -255,6 +267,7 @@ const StudentDetails = () => {
   
               {/* Body */}
               {result?.semesters[0]?.courses.map((mark, index) => (
+                
                 <div className="flex" key={index}>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
                     {index + 1}
@@ -272,10 +285,10 @@ const StudentDetails = () => {
                     {eval_gp(mark?.marks) >= 4 ? mark.credit : (eval_gp(mark?.marks) == -1 ? "-" : 0)}
                   </div>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
-                    {mark.grade}
+                    {eval_gp(mark?.marks)}
                   </div>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
-                    {mark.grade_point ? mark.grade_point : "-"}
+                    {eval_grade(eval_gp(mark?.marks) , mark.credit)}
                   </div>
                 </div>
               ))}
@@ -324,19 +337,22 @@ const StudentDetails = () => {
   
               <div className="flex">
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  30
+                  {result?tot_sem_cred(result.semesters[0].courses):"-"}
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  30
+                  -
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  30
+                  {result?sgpa_calc(result.semesters[0].courses):"-"}
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  30
+                  {result?sem_grade(sgpa_calc(result.semesters[0].courses)):"-"}
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  30
+                  -
+                </div>
+                <div className="border flex-1 text-[10px] p-2 flex justify-center">
+                  -
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
                   ABS
@@ -352,123 +368,115 @@ const StudentDetails = () => {
 
   return (
     <>
-    <Container className="flex flex-col items-center min-h-[100vh] min-w-full bg-gradient-to-r from-[#FFEFBA] to-[#FFFFFF] rounded-md">
-      <div className=' text-black font-bold text-3xl mt-3'>
-        Result
-      </div>
-      <Box
-        component="form"
-        noValidate
-        autoComplete="off"
-        className="bg-white p-8 rounded-lg shadow-lg flex flex-row justify-center items-center gap-6 w-full max-w-[80%] h-[25%] mt-10"
-      >
-
-        {/* Roll Number Input */}
-        <TextField
-          label="Enter Roll Number"
-          type="text"
-          value={rollNumber}
-          onChange={handleRollChange}
-          fullWidth
-          margin="normal"
-          className="bg-white"
-          InputProps={{
-            sx: {
-              '& input': {
-                padding: '12px',
-                outline: 'none',
-              },
-            },
-            classes:{
-            }
-          }}
-        />
-
-        {/* Academic Year Dropdown */}
-        <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-lg">
-          <InputLabel id="academic-year-label">Academic Year</InputLabel>
-          <Select
-            labelId="academic-year-label"
-            value={academicYear}
-            label="Academic Year"
-            onChange={(e) => setAcademicYear(e.target.value)}
-            className="bg-white"
-            sx={{
-              '& .MuiSelect-select': {
-                padding: '12px',
-                caretColor: 'transparent',
-                outline: 'none',
-              },
-            classes:{
-              input: 'hide-caret',
-            }
-            }}
-          >
-            {academicYears.map((year, index) => (
-              <MenuItem key={index} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* Semester Dropdown */}
-        <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-lg">
-          <InputLabel id="semester-label">Semester</InputLabel>
-          <Select
-            labelId="semester-label"
-            value={semester}
-            label="Semester"
-            onChange={(e) => setSemester(e.target.value)}
-            className="bg-white"
-            sx={{
-              '& .MuiSelect-select': {
-                padding: '12px',
-                caretColor: 'transparent',
-                outline: 'none',
-              },
-            }}
-          >
-            {semesters.map((sem, index) => (
-              <MenuItem key={index} value={sem}>
-                {sem}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* Submit Button */}
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg h-10 mt-2"
-        >
-          Submit
-        </Button>
-      </Box>
-    </Container>
-    {(result)?
-    
-      <>
-        <div ref={componentRef} >
-          {renderStudentResults()}
+      <Container className="flex flex-col items-center min-h-screen min-w-full bg-gradient-to-r from-[#FFEFBA] to-[#FFFFFF] p-6">
+        <div className="text-black font-bold text-4xl mt-6 tracking-wide">
+          Results Portal
         </div>
-
-
-      </>
-      
-      
-      :
-      
-      
-      <>
-      
-        Nothing to show
-        
-      </>
-    }
+  
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          className="bg-white p-8 rounded-lg shadow-2xl flex flex-col md:flex-row justify-center items-center gap-6 w-full max-w-[90%] md:max-w-[70%] mt-10"
+        >
+          {/* Roll Number Input */}
+          <TextField
+            label="Enter Roll Number"
+            type="text"
+            value={rollNumber}
+            onChange={handleRollChange}
+            fullWidth
+            margin="normal"
+            className="bg-white rounded-md"
+            InputProps={{
+              sx: {
+                '& input': {
+                  padding: '14px',
+                  borderRadius: '8px',
+                },
+              },
+            }}
+          />
+  
+          {/* Academic Year Dropdown */}
+          <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-md">
+            <InputLabel id="academic-year-label">Academic Year</InputLabel>
+            <Select
+              labelId="academic-year-label"
+              value={academicYear}
+              label="Academic Year"
+              onChange={(e) => setAcademicYear(e.target.value)}
+              className="bg-white"
+              sx={{
+                '& .MuiSelect-select': {
+                  padding: '14px',
+                  borderRadius: '8px',
+                },
+              }}
+            >
+              {academicYears.map((year, index) => (
+                <MenuItem key={index} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+  
+          {/* Semester Dropdown */}
+          <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-md">
+            <InputLabel id="semester-label">Semester</InputLabel>
+            <Select
+              labelId="semester-label"
+              value={semester}
+              label="Semester"
+              onChange={(e) => setSemester(e.target.value)}
+              className="bg-white"
+              sx={{
+                '& .MuiSelect-select': {
+                  padding: '14px',
+                  borderRadius: '8px',
+                },
+              }}
+            >
+              {semesters.map((sem, index) => (
+                <MenuItem key={index} value={sem}>
+                  {sem}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+  
+          {/* Submit Button */}
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white px-6 py-3 rounded-md font-semibold transition duration-200 mt-2"
+          >
+            Submit
+          </Button>
+        </Box>
+  
+        {result ? (
+          <>
+          <ReactToPrint
+          trigger={() => (
+            <Button className="ml-8 mt-10" variant="contained" color="primary">
+              Print PDF
+            </Button>
+          )}
+          content={() => componentRef.current!}
+        />
+          <div ref={componentRef} className="w-full max-w-[100%] md:max-w-[100%] mt-10 p-6 bg-white rounded-lg shadow-lg">
+            {renderStudentResults()}
+          </div>
+          </>
+        ) : (
+          <div className="mt-10 text-gray-500 font-semibold text-lg">Nothing to show</div>
+        )}
+      </Container>
     </>
   );
+  
 };
 
 export default StudentDetails;
