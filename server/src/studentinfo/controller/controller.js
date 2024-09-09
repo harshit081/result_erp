@@ -80,7 +80,6 @@ const fetchresult = async (req, res) => {
 
 const pushdata = async (req, res) => {
   try {
-    console.log("hehe1");
     const {
       roll_number,
       name,
@@ -96,7 +95,6 @@ const pushdata = async (req, res) => {
       month_year,
     } = req.body;
     const blocked_result = [];
-
     const query1 = `INSERT INTO studentinfo(roll_no,name,prog, campus, batch,blocked_result)
     VALUES($1, $2, $3, $4, $5, $6)
     ON CONFLICT (roll_no)
