@@ -282,8 +282,6 @@ const Home: React.FC = () => {
     });
     console.log("response",response)
   }
-
-  //& todo  
   const handlePush = async () => {
     console.log("completedata", completeData)
     const studData = completeData ? completeData : [];
