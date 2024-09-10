@@ -8,7 +8,7 @@ const arrayDifference = (arr1, arr2) => {
 const fetchsemester = async (req, res) => {
   try {
     const roll_number  = req.query.roll_number;
-    console.log("rollnumber", roll_number)
+    // console.log("rollnumber", roll_number)
     const query1 = `
       SELECT 
       DISTINCT r.semester
@@ -41,10 +41,10 @@ const fetchresult = async (req, res) => {
     const semester = req.query.semester;
     const acad_year = req.query.acad_year;
 
-    console.log(roll_number,semester,acad_year)
+    // console.log(roll_number,semester,acad_year)
 
     const batch = await pool.query(`SELECT batch FROM studentinfo WHERE roll_no = $1`, [roll_number]);
-console.log("Batch: ", batch.rows[0].batch);
+// console.log("Batch: ", batch.rows[0].batch);
 
 const query = `
   SELECT 
@@ -171,7 +171,6 @@ const pushdata = async (req, res) => {
     name = $2,
     prog = $3, campus = $4, batch = $5
     `;
-    console.log("hehe2");
     const studentinsert = await pool.query(query1, [
       roll_number,
       name,
@@ -209,7 +208,6 @@ const pushdata = async (req, res) => {
       marks,
       month_year,
     ]);
-    console.log("hehe");
     res.status(200).json({ message: "Data pushed successfully" });
   } catch (error) {
     console.error(error);
@@ -222,6 +220,7 @@ const pushdata = async (req, res) => {
 const blockresult = async (req, res) => {
   try {
     const { roll_number, block_result } = req.body;
+    // console.log("---------------------------------",block_result)
     const query = `UPDATE studentinfo SET blocked_result = $1 WHERE roll_no = $2`;
     const result = await pool.query(query, [
       JSON.stringify(block_result),

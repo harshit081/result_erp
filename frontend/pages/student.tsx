@@ -122,7 +122,7 @@ const StudentDetails = () => {
     setRollNumber(roll);
   
     const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchsemester?roll_number=${roll}`;
-    console.log(url);
+    // console.log(url);
   
     try {
       const response = await fetch(url, {
@@ -143,7 +143,7 @@ const StudentDetails = () => {
 
   const handleSubmit = async () => {
     const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
-    console.log(url)
+    // console.log(url)
   
     try {
       const response = await fetch(url, {
@@ -155,9 +155,9 @@ const StudentDetails = () => {
       }
   
       const data = await response.json(); // Await response.json() to parse the data
-      console.log('Result data:', data); // Log the fetched result data
+      // console.log('Result data:', data); // Log the fetched result data
       setResult(data); // Store the result data in state
-      console.log(result); 
+      // console.log(result); 
     } catch (error) {
       console.error('Error fetching result data:', error);
     }

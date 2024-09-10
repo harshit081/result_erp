@@ -52,13 +52,13 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onConfirm }) => {
   };
 
   return (
-    <div>
+    <div className="mt-5 ">
       <Button
         component="label"
         size="small"
         variant="contained"
         startIcon={<CloudUploadIcon />}
-        className="m-3 inline px-2 py-4"
+        className="m-3 inline px-2 py-4 "
       >
         {file ? "Change File" : "Upload File"}
         <VisuallyHiddenInput
@@ -70,7 +70,7 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onConfirm }) => {
 
       {file && !isConfirmed && (
         <>
-          <p className="mt-6">File selected: {file.name}</p>
+          <p className="mt-6 font-semibold ml-3">File selected: {file.name}</p>
           <Button
             variant="contained"
             color="success"
