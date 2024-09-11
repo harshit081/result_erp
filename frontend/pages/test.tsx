@@ -342,26 +342,40 @@ const Home: React.FC = () => {
           month_year: studentdata["Date of Exam"],
         }),
       });
-      response.ok ? console.log("ok") : alert("Invalid Data")
+      return(response.ok ? (true) : (false))
     } catch (e) {
       alert("Invalid file type")
     }
   }
   const handlePush = async () => {
-    // console.log("completedata", completeData)
     const studData = completeData ? completeData : [];
     let studentsdata;
     if (studData[0]["Roll No"]) {
       studentsdata = studData;
     } else {
-      studentsdata = parseHorizontalStructure(studData)
+      studentsdata = parseHorizontalStructure(studData);
     }
-    // console.log("studentsdata", studentsdata)
-    studentsdata.map((studentdata) => {
-      pushData(studentdata)
-
-    })
-  }
+    let successCount = 0;
+    try {
+      studentsdata.map((studentdata) => {
+        pushData(studentdata).then((success) => {
+          if (success) {
+            successCount++;
+          }
+        });
+      });
+      // Wait for all promises to resolve
+      await Promise.all(studentsdata.map((studentdata) => pushData(studentdata)));
+      if (successCount === studentsdata.length) {
+        alert("All rows successfully pushed!");
+      } else {
+        alert("Some rows failed to push. Please check the data.");
+      }
+    } catch (e) {
+      alert("Invalid format");
+      return;
+    }
+  };
 
   const renderStudentResults = (student: Student) => {
     return student.results.flatMap((result) => (
