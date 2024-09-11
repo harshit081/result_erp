@@ -383,7 +383,7 @@ const Home: React.FC = () => {
         <div className="flex w-full pt-10">
           <div className="flex w-1/4 justify-center items-center">
             <img
-              src="/dseu-logo.png"
+              src="/dseulogo.png"
               alt="DSEU-LOGO"
               className="w-[29%] h-[60%] "
             />
@@ -609,46 +609,77 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="bg-[#dfdede]"></div>
-      <div className="mt-[154px] max-sm:mt-[150px] px-2 sm:ml-[250px] h-auto min-h-screen">
-        <div className="bg-blue-800 py-2 px-2 sm:mx-8 rounded shadow mt-28">
-          <h1 className="text-2xl text-white font-bold text-center">Student Result</h1>
-        </div>
-        <div className="p-5 flex justify-between">
-          <div className="w-full">
-            Student Result
-            <FileUploadButton onConfirm={handleFileConfirmed} />
+      <div className="bg-gray-50 min-h-screen">
+        {/* Page Wrapper */}
+        <div className="pt-[70px] max-sm:pt-[150px] px-4 sm:mx-[50px]">
+  
+          {/* Header Section */}
+          <div className="bg-blue-900 py-4 px-6 sm:mx-8 rounded-lg shadow-lg">
+            <h1 className="text-3xl text-white font-extrabold text-center">Teacher Dashboard: Student Results</h1>
           </div>
-          <div className="w-full">
-            Block result
-            <FileUploadButton onConfirm={handleBlockConfirmed} />
+  
+          {/* Upload Sections */}
+          <div className="p-6 sm:flex justify-between mt-12 space-y-8 sm:space-y-0 sm:space-x-6">
+  
+            {/* Upload Student Result */}
+            <div className="w-full sm:w-[48%] bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 ease-in-out">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Upload Student Result</h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Upload the student results file in the supported format. Ensure all details are accurate before submission.
+              </p>
+              <FileUploadButton onConfirm={handleFileConfirmed} />
+            </div>
+  
+            {/* Upload Block Result */}
+            <div className="w-full sm:w-[48%] bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 ease-in-out">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Upload Block Result</h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Upload the block result file here. Ensure the block data corresponds to the correct student groups.
+              </p>
+              <FileUploadButton onConfirm={handleBlockConfirmed} />
+            </div>
           </div>
-        </div>
-        {isSubmitted && studentDataJSON && (<>
-          <Button className="ml-8" variant="contained" color="primary" onClick={handlePush}>
-                Push
+  
+          {/* Action Buttons */}
+          {isSubmitted && studentDataJSON && (
+            <div className="flex space-x-6 mt-10 ml-6">
+              <Button
+                variant="contained"
+                color="primary"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow-md transition-colors duration-200 ease-in-out"
+                onClick={handlePush}
+              >
+                Push Results
               </Button>
-          <ReactToPrint
-            trigger={() => (
-              <Button className="ml-8" variant="contained" color="primary">
-                Print PDF
-              </Button>
-            )}
-            content={() => componentRef.current!}
-          />
-        </>
-        )}
-        {isSubmitted && studentDataJSON && (<>
-          <div ref={componentRef} >
-            {studentDataJSON.map((student) => renderStudentResults(student))}
-          </div>
-
-        </>
-
-        )}
+  
+              <ReactToPrint
+                trigger={() => (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow-md transition-colors duration-200 ease-in-out"
+                  >
+                    Print PDF
+                  </Button>
+                )}
+                content={() => componentRef.current!}
+              />
+            </div>
+          )}
+  
+          {/* Display Student Results */}
+          {isSubmitted && studentDataJSON && (
+            <div ref={componentRef} className="bg-white p-6 mt-8 rounded-lg shadow-lg">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">Student Results Overview</h2>
+              {studentDataJSON.map((student) => renderStudentResults(student))}
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
+  
+  
 };
 
 export default Home;
