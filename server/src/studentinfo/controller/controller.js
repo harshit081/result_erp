@@ -237,7 +237,7 @@ const pushdata = async (req, res) => {
     DO UPDATE SET
     marks = $5, month_year = $6
     `;
-
+    console.log(roll_number, semester, acad_year, course_code, marks, month_year);
     const resultinsert = await pool.query(query3, [
       roll_number,
       semester,
@@ -246,6 +246,7 @@ const pushdata = async (req, res) => {
       marks,
       month_year,
     ]);
+    
     res.status(200).json({ message: "Data pushed successfully" });
   } catch (error) {
     console.error(error);
