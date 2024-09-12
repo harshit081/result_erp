@@ -10,7 +10,7 @@ interface Mark {
   course_name: string;
   credit: number;
   full_mark: number;
-  marks_obtained: number | string | null;
+  marks_obtained: string ;
   date_of_exam: string;
   grade_point: number;
   grade: string;
@@ -23,6 +23,7 @@ interface SemesterResult {
   academic_year: string;
   batch: number | null;
   marks: Mark[];
+  // earned_credit: number;
 }
 
 interface Student {
@@ -38,44 +39,66 @@ interface Student {
   abc_id: string;
 }
 
-function eval_grade(gp: number, credit: number) {
-  if (credit) {
-    if (gp == 10) return "O";
-    else if (gp == 9) return "A+";
-    else if (gp == 8) return "A";
-    else if (gp == 7) return "B+";
-    else if (gp == 6) return "B";
-    else if (gp == 5) return "C";
-    else if (gp == 4) return "P";
-    else return "F";
-  } else {
-    if (gp >= 4) {
-      return "S";
-    } else {
-      return "N"
+function tot_sem_cred(courses: Mark[]){
+  let total_credit = 0;
+  courses.forEach((course) => {
+    if(eval_gp(course.marks_obtained)){
+      total_credit += parseFloat(course.credit.toString());
     }
-  }
+  })
+  return total_credit;
+}
+function eval_grade(mark: string, credit: number) {
+  if (!isNaN(parseFloat(mark)) && typeof(parseFloat(mark))=="number"){
+    // console.log("1",mark)
+    const marks = parseFloat(mark)
+    if (credit){
+      if (marks >= 90) return "O";
+      else if (marks >= 80) return "A+";
+      else if (marks >= 70) return "A";
+      else if (marks >= 60) return "B+";
+      else if (marks >= 50) return "B";
+      else if (marks >= 45) return "C";
+      else if (marks >= 40) return "P";
+      else return "F";
+    }
+    else{
+      if (marks >= 40) {
+        return "S";
+      } else {
+        return "N"
+      }
+    }
+  } 
+  else{
+    // console.log("mark",mark)
+    return mark;
+  }  
 }
 
 function sgpa_calc(marks: Mark[]) {
   let total_credit = 0;
   let ci_pi = 0;
   marks.map((mark) => {
-    total_credit += mark.grade_point ? mark.credit : 0;
-    ci_pi += mark.credit * mark.grade_point;
+    total_credit += (mark.grade_point==0 || mark.grade_point==-1) ? 0 : mark.credit ;
+    ci_pi += mark.credit * ((mark.grade_point==0 || mark.grade_point==-1) ? 0 : mark.grade_point);
   });
   return total_credit > 0 ? parseFloat((ci_pi / total_credit).toFixed(2)) : 0;
 }
 
-function eval_gp(marks: number) {
-  if (marks >= 90) return 10;
-  else if (marks >= 80) return 9;
-  else if (marks >= 70) return 8;
-  else if (marks >= 60) return 7;
-  else if (marks >= 50) return 6;
-  else if (marks >= 45) return 5;
-  else if (marks >= 40) return 4;
-  else return 0;
+function eval_gp(mark: string) {
+  if (typeof(parseFloat(mark))=="number"){
+    const marks = parseFloat(mark)
+    if (marks >= 90) return 10;
+    else if (marks >= 80) return 9;
+    else if (marks >= 70) return 8;
+    else if (marks >= 60) return 7;
+    else if (marks >= 50) return 6;
+    else if (marks >= 45) return 5;
+    else if (marks >= 40) return 4;
+    else return 0;
+  } 
+  else return -1;
 }
 
 function sem_grade(sgpa: number) {
@@ -199,10 +222,10 @@ const Home: React.FC = () => {
         course_name: row["Sub Name"],
         credit: parseFloat(row["Credit"]),
         full_mark: parseFloat(row["Full Mark"]),
-        marks_obtained: row["Mark Obt"] ? parseFloat(row["Mark Obt"]) : null,
+        marks_obtained: row["Mark Obt"],
         date_of_exam: row["Date of Exam"],
-        grade_point: eval_gp(parseFloat(row["Mark Obt"] || 0)),
-        grade: eval_grade(eval_gp(parseFloat(row["Mark Obt"] || 0)), parseFloat(row["Credit"])),
+        grade_point: eval_gp(row["Mark Obt"] || 0),
+        grade: eval_grade(row["Mark Obt"], parseFloat(row["Credit"])),
       };
 
       if (student) {
@@ -358,6 +381,7 @@ const Home: React.FC = () => {
     let successCount = 0;
     try {
       studentsdata.map((studentdata) => {
+        console.log(studentdata)
         pushData(studentdata).then((success) => {
           if (success) {
             successCount++;
@@ -579,7 +603,7 @@ const Home: React.FC = () => {
               {/* Body */}
               <div className="flex">
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  30
+                  {tot_sem_cred(result.marks)}
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
                   -

@@ -8,16 +8,18 @@ const arrayDifference = (arr1, arr2) => {
 const fetchsemester = async (req, res) => {
   try {
     const roll_number  = req.query.roll_number;
-    // console.log("rollnumber", roll_number)
+    const acad_year  = req.query.acad_year;
+    console.log("rollnumber", roll_number)
+    console.log("acadyear", acad_year)
     const query1 = `
       SELECT 
       DISTINCT r.semester
       FROM studentinfo s
       LEFT JOIN result r ON s.roll_no = r.roll_no
-      WHERE s.roll_no = $1
+      WHERE s.roll_no = $1 AND r.acad_year = $2
     `;
     const query2 =`SELECT s.blocked_result FROM studentinfo s WHERE s.roll_no = $1`
-    const result1= await pool.query(query1, [roll_number]);
+    const result1= await pool.query(query1, [roll_number, acad_year]);
 
 
     const result2 = await pool.query(query2, [roll_number]);
@@ -26,8 +28,30 @@ const fetchsemester = async (req, res) => {
     const semesters = result1.rows.map((row) => parseInt(row.semester));
   
     const avail_sem=arrayDifference(semesters,result2.rows[0]["blocked_result"])
-    // console.log(avail_sem)
+    console.log(avail_sem)
     res.json(avail_sem);
+  } catch (e) {
+    res.status(500).json({
+      message: e.message,
+    });
+  }
+};
+const fetchacadyear = async (req, res) => {
+  try {
+    const roll_number  = req.query.roll_number;
+    console.log("rollnumber", roll_number)
+    const query1 = `
+      SELECT 
+      DISTINCT r.acad_year
+      FROM studentinfo s
+      LEFT JOIN result r ON s.roll_no = r.roll_no
+      WHERE s.roll_no = $1
+    `;
+    const result= await pool.query(query1, [roll_number]);
+    console.log("result",result)
+    const year = result.rows.map((row)=>row.acad_year)
+    console.log(year)
+    res.json(year);
   } catch (e) {
     res.status(500).json({
       message: e.message,
@@ -49,7 +73,6 @@ const fetchresult = async (req, res) => {
 const query = `
   SELECT 
     s.roll_no AS rollno,
-    s.name,
     s.prog,
     s.campus,
     r.semester,
@@ -59,13 +82,20 @@ const query = `
     c.course_name,
     c.credit,
     r.marks,
-    r.month_year
+    r.month_year,
+    p.name,
+    p.mother,
+    p.father,
+    p.guardian,
+    p.abc
   FROM 
     studentinfo s
   LEFT JOIN 
     result r ON s.roll_no = r.roll_no
   LEFT JOIN 
     course c ON r.course_code = c.course_code
+  LEFT JOIN
+    personalinfo p ON s.roll_no = p.rollno
   WHERE 
     s.roll_no = $1 
     AND s.batch = $2 
@@ -93,6 +123,10 @@ results.rows.forEach(row => {
   const {
     rollno,
     name,
+    mother,
+    father,
+    guardian,
+    abc,
     prog,
     campus,
     batch,
@@ -109,6 +143,10 @@ results.rows.forEach(row => {
     structuredResults[rollno] = {
       roll_no: rollno,
       name,
+      father,
+      mother,
+      guardian,
+      abc,
       prog,
       campus,
       batch,
@@ -270,5 +308,6 @@ module.exports = {
   pushdata,
   blockresult,
   unblockresult,
-  fetchsemester
+  fetchsemester,
+  fetchacadyear
 };

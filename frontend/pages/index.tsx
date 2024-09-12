@@ -1,7 +1,7 @@
 "use client";
-import React, { useState,useRef } from 'react';
+import React, { useState, useRef, ReactNode } from 'react';
 import ReactToPrint from "react-to-print";
-import { Container, TextField, FormControl, InputLabel, Select, MenuItem, Button, Box } from '@mui/material';
+import { Container, TextField, FormControl, InputLabel, Select, MenuItem, Button, Box, SelectChangeEvent } from '@mui/material';
 // require('dotenv').config();
 
 interface Mark {
@@ -21,8 +21,6 @@ interface SemesterResult {
   sgpa: number;
   sem_grade: string;
   academic_year: string;
-  
-  
 }
 
 interface Student {
@@ -38,7 +36,7 @@ interface Student {
   abc_id?: string;
 }
 
-function eval_grade(gp: number, credit : number) {
+function eval_grade(gp: number, credit: number) {
   if (credit) {
     if (gp == 10) return "O";
     else if (gp == 9) return "A+";
@@ -49,7 +47,7 @@ function eval_grade(gp: number, credit : number) {
     else if (gp == 4) return "P";
     else return "F";
   } else {
-    if (gp >=4){
+    if (gp >= 4) {
       return "S";
     } else {
       return "N"
@@ -58,23 +56,23 @@ function eval_grade(gp: number, credit : number) {
 }
 
 function eval_gp(marks: number | string | null) {
-  if(marks === null) return -1;
-  if(typeof(marks) === "number" || !isNaN(parseFloat(marks))) {
-  let x = (typeof(marks) === "number"? marks : parseFloat(marks));
-  if (x >= 90) return 10;
-  else if (x >= 80) return 9;
-  else if (x >= 70) return 8;
-  else if (x >= 60) return 7;
-  else if (x >= 50) return 6;
-  else if (x >= 45) return 5;
-  else if (x >= 40) return 4;
-  else return 0;
-  }else{
+  if (marks === null) return -1;
+  if (typeof (marks) === "number" || !isNaN(parseFloat(marks))) {
+    let x = (typeof (marks) === "number" ? marks : parseFloat(marks));
+    if (x >= 90) return 10;
+    else if (x >= 80) return 9;
+    else if (x >= 70) return 8;
+    else if (x >= 60) return 7;
+    else if (x >= 50) return 6;
+    else if (x >= 45) return 5;
+    else if (x >= 40) return 4;
+    else return 0;
+  } else {
     return -1;
   }
 }
 
-function tot_sem_cred(courses: Mark[]){
+function tot_sem_cred(courses: Mark[]) {
   let total_credit = 0;
   courses.forEach((course) => {
     total_credit += parseFloat(course.credit.toString());
@@ -87,7 +85,7 @@ function sgpa_calc(courses: Mark[]) {
   let total_credit = 0;
   let ci_pi = 0;
   courses.forEach((course) => {
-    total_credit += (eval_gp(course.marks)? parseFloat(course.credit.toString()) : 0)
+    total_credit += (eval_gp(course.marks) ? parseFloat(course.credit.toString()) : 0)
     ci_pi += parseFloat(course.credit.toString()) * eval_gp(course.marks);
   });
   return total_credit > 0 ? parseFloat((ci_pi / total_credit).toFixed(2)) : 0;
@@ -107,53 +105,84 @@ function sem_grade(sgpa: number) {
 
 const StudentDetails = () => {
   const [rollNumber, setRollNumber] = useState('');
-  const [semesters, setSemesters] = useState([]);
-  const [academicYear, setAcademicYear] = useState('');
+
+  const [semesters, setSemesters] = useState(["Semester"]);
   const [semester, setSemester] = useState('')
+
+  const [academicYears, setAcademicYears] = useState(["Academic Year"]);
+  const [academicYear, setAcademicYear] = useState('');
+
   const [result, setResult] = useState<Student>();
 
   const componentRef = useRef<HTMLDivElement>(null);
 
-//   const semesters = []
-  const academicYears = [ '2021-22', '2022-23', '2023-24', '2024-25'];
+  //   const semesters = []
 
   const handleRollChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const roll = e.target.value.toUpperCase();
     setRollNumber(roll);
-  
-    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchsemester?roll_number=${roll}`;
+
+    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchacadyear?roll_number=${roll}`;
     // console.log(url);
-  
+
     try {
       const response = await fetch(url, {
         method: 'GET',
       });
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
+
       const data = await response.json(); // Await response.json() to parse the data
-      console.log('Semester data:', data); 
-      setSemesters(data)// Log the fetched data
+      console.log('acad_year data:', data);
+      
+      setAcademicYears(data)// Log the fetched data
     } catch (error) {
       console.error('Error fetching semester data:', error);
     }
   };
 
-  const handleSubmit = async () => {
-    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
-    // console.log(url)
-  
+
+
+
+  const handleAcademicYearChange = async (e : SelectChangeEvent<string>, child: ReactNode) => {
+    const acad_year = e.target.value as string;
+    setAcademicYear(acad_year);
+    console.log("heheheh",acad_year)
+    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchsemester?roll_number=${rollNumber}&acad_year=${acad_year}`;
+
     try {
       const response = await fetch(url, {
         method: 'GET',
       });
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
+
+      const data = await response.json(); // Await response.json() to parse the data
+      console.log('Semester data:', data);
+      setSemesters(data)// Log the fetched data
+    } catch (error) {
+      console.error('Error fetching semester data:', error);
+    }
+  }
+
+
+  const handleSubmit = async () => {
+    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
+    // console.log(url)
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
       const data = await response.json(); // Await response.json() to parse the data
       // console.log('Result data:', data); // Log the fetched result data
       setResult(data); // Store the result data in state
@@ -161,7 +190,7 @@ const StudentDetails = () => {
     } catch (error) {
       console.error('Error fetching result data:', error);
     }
-  
+
     console.log(`Roll Number: ${rollNumber}`);
     console.log(`Semester: ${semester}`);
     console.log(`Academic Year: ${academicYear}`);
@@ -201,7 +230,7 @@ const StudentDetails = () => {
             </div>
           </div>
         </div>
-  
+
         <div className="border-[1px] px-4 mx-4 pt-4">
           <div className="student-info mb-4 flex justify-center">
             <div className="w-[80%]">
@@ -237,7 +266,7 @@ const StudentDetails = () => {
               </div>
             </div>
           </div>
-  
+
           <div className="result-table mb-4 w-full flex justify-center">
             <div className="w-[90%] border border-collapse">
               {/* Header */}
@@ -264,10 +293,10 @@ const StudentDetails = () => {
                   Grade Point
                 </div>
               </div>
-  
+
               {/* Body */}
               {result?.semesters[0]?.courses.map((mark, index) => (
-                
+
                 <div className="flex" key={index}>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
                     {index + 1}
@@ -288,13 +317,13 @@ const StudentDetails = () => {
                     {eval_gp(mark?.marks)}
                   </div>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
-                    {eval_grade(eval_gp(mark?.marks) , mark.credit)}
+                    {eval_grade(eval_gp(mark?.marks), mark.credit)}
                   </div>
                 </div>
               ))}
             </div>
           </div>
-  
+
           <div className="summary-table w-full flex justify-center">
             <div className="flex flex-col w-[90%] border border-collapse">
               <div className="flex">
@@ -334,19 +363,19 @@ const StudentDetails = () => {
                   Grading System
                 </div>
               </div>
-  
+
               <div className="flex">
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  {result?tot_sem_cred(result.semesters[0].courses):"-"}
+                  {result ? tot_sem_cred(result.semesters[0].courses) : "-"}
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
                   -
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  {result?sgpa_calc(result.semesters[0].courses):"-"}
+                  {result ? sgpa_calc(result.semesters[0].courses) : "-"}
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
-                  {result?sem_grade(sgpa_calc(result.semesters[0].courses)):"-"}
+                  {result ? sem_grade(sgpa_calc(result.semesters[0].courses)) : "-"}
                 </div>
                 <div className="border flex-1 text-[10px] p-2 flex justify-center">
                   -
@@ -364,17 +393,17 @@ const StudentDetails = () => {
       </div>
     );
   };
-  
+
 
   return (
     <>
       <Container className="flex flex-col items-center min-h-screen min-w-full bg-gradient-to-r from-[#FFEFBA] to-[#FFFFFF] p-6">
-        
+
         {/* Title */}
         <div className="text-gray-900 font-extrabold text-5xl mt-6 tracking-wide text-center">
           Student Results Portal
         </div>
-  
+
         {/* Form Section */}
         <Box
           component="form"
@@ -401,7 +430,7 @@ const StudentDetails = () => {
               },
             }}
           />
-  
+
           {/* Academic Year Dropdown */}
           <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-lg">
             <InputLabel id="academic-year-label">Academic Year</InputLabel>
@@ -409,7 +438,7 @@ const StudentDetails = () => {
               labelId="academic-year-label"
               value={academicYear}
               label="Academic Year"
-              onChange={(e) => setAcademicYear(e.target.value)}
+              onChange={handleAcademicYearChange}
               className="bg-white"
               sx={{
                 '& .MuiSelect-select': {
@@ -426,7 +455,7 @@ const StudentDetails = () => {
               ))}
             </Select>
           </FormControl>
-  
+
           {/* Semester Dropdown */}
           <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-lg">
             <InputLabel id="semester-label">Semester</InputLabel>
@@ -451,7 +480,7 @@ const StudentDetails = () => {
               ))}
             </Select>
           </FormControl>
-  
+
           {/* Submit Button */}
           <Button
             variant="contained"
@@ -461,7 +490,7 @@ const StudentDetails = () => {
             Submit
           </Button>
         </Box>
-  
+
         {/* Result and Print Section */}
         {result ? (
           <>
@@ -473,7 +502,7 @@ const StudentDetails = () => {
               )}
               content={() => componentRef.current!}
             />
-  
+
             <div ref={componentRef} className="w-full h-full bg-white rounded-lg shadow-lg mt-10 p-8">
               {renderStudentResults()}
             </div>
@@ -484,9 +513,9 @@ const StudentDetails = () => {
       </Container>
     </>
   );
-  
-  
-  
+
+
+
 };
 
 export default StudentDetails;
