@@ -8,7 +8,7 @@ interface Mark {
   course_code: string;
   course_name: string;
   credit: number;
-  marks: number | string | null;
+  marks: string;
   month_year: string;
   full_mark: number;
   grade_point: number;
@@ -36,46 +36,54 @@ interface Student {
   abc_id?: string;
 }
 
-function eval_grade(gp: number, credit: number) {
-  if (credit) {
-    if (gp == 10) return "O";
-    else if (gp == 9) return "A+";
-    else if (gp == 8) return "A";
-    else if (gp == 7) return "B+";
-    else if (gp == 6) return "B";
-    else if (gp == 5) return "C";
-    else if (gp == 4) return "P";
-    else return "F";
-  } else {
-    if (gp >= 4) {
-      return "S";
-    } else {
-      return "N"
+function eval_grade(mark: string, credit: number) {
+  if (!isNaN(parseFloat(mark)) && typeof(parseFloat(mark))=="number"){
+    // console.log("1",mark)
+    const marks = parseFloat(mark)
+    if (credit){
+      if (marks >= 90) return "O";
+      else if (marks >= 80) return "A+";
+      else if (marks >= 70) return "A";
+      else if (marks >= 60) return "B+";
+      else if (marks >= 50) return "B";
+      else if (marks >= 45) return "C";
+      else if (marks >= 40) return "P";
+      else return "F";
     }
-  }
+    else{
+      if (marks >= 40) {
+        return "S";
+      } else {
+        return "N"
+      }
+    }
+  } 
+  else{
+    return mark;
+  }  
 }
 
-function eval_gp(marks: number | string | null) {
-  if (marks === null) return -1;
-  if (typeof (marks) === "number" || !isNaN(parseFloat(marks))) {
-    let x = (typeof (marks) === "number" ? marks : parseFloat(marks));
-    if (x >= 90) return 10;
-    else if (x >= 80) return 9;
-    else if (x >= 70) return 8;
-    else if (x >= 60) return 7;
-    else if (x >= 50) return 6;
-    else if (x >= 45) return 5;
-    else if (x >= 40) return 4;
+
+function eval_gp(mark: string) {
+  if (typeof(parseFloat(mark))=="number"){
+    const marks = parseFloat(mark)
+    if (marks >= 90) return 10;
+    else if (marks >= 80) return 9;
+    else if (marks >= 70) return 8;
+    else if (marks >= 60) return 7;
+    else if (marks >= 50) return 6;
+    else if (marks >= 45) return 5;
+    else if (marks >= 40) return 4;
     else return 0;
-  } else {
-    return -1;
-  }
+  } 
+  else return -1;
 }
-
 function tot_sem_cred(courses: Mark[]) {
   let total_credit = 0;
   courses.forEach((course) => {
-    total_credit += parseFloat(course.credit.toString());
+    if(eval_gp(course.marks)){
+      total_credit += parseFloat(course.credit.toString());
+    }
   })
   return total_credit;
 }
@@ -85,8 +93,8 @@ function sgpa_calc(courses: Mark[]) {
   let total_credit = 0;
   let ci_pi = 0;
   courses.forEach((course) => {
-    total_credit += (eval_gp(course.marks) ? parseFloat(course.credit.toString()) : 0)
-    ci_pi += parseFloat(course.credit.toString()) * eval_gp(course.marks);
+    total_credit += ((eval_gp(course.marks) ==0 || eval_gp(course.marks) == -1) ? 0 : parseFloat(course.credit.toString()))
+    ci_pi += parseFloat(course.credit.toString()) * ((eval_gp(course.marks) ==0 || eval_gp(course.marks) == -1) ? 0 : eval_gp(course.marks))
   });
   return total_credit > 0 ? parseFloat((ci_pi / total_credit).toFixed(2)) : 0;
 }
@@ -317,7 +325,7 @@ const StudentDetails = () => {
                     {eval_gp(mark?.marks)}
                   </div>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
-                    {eval_grade(eval_gp(mark?.marks), mark.credit)}
+                    {mark.credit ? eval_gp(mark?.marks) : "-"}
                   </div>
                 </div>
               ))}
