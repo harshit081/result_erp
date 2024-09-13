@@ -381,10 +381,13 @@ const Home: React.FC = () => {
     let successCount = 0;
     try {
       studentsdata.map((studentdata) => {
-        console.log(studentdata)
+        // console.log(studentdata)
         pushData(studentdata).then((success) => {
           if (success) {
             successCount++;
+          }
+          else{
+            console.log(studentdata)
           }
         });
       });

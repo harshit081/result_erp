@@ -209,7 +209,7 @@ const StudentDetails = () => {
   const renderStudentResults = () => {
     return (
       <div key={result?.semesters[0]?.semester} className="">
-        <div className='font-bold text-sm mt-0'>ABC ID : {result?.abc}</div>
+        {(result?.abc && <div className='font-bold text-sm mt-0'>ABC ID : {result?.abc}</div>)}
         <div className="flex w-full pt-10">
           <div className="flex w-1/4 justify-center ">
             <img
@@ -267,7 +267,7 @@ const StudentDetails = () => {
                         </div>
                       )}
                     </>
-                  ) : (
+                  ) : (result?.guardian &&
                     <div className="p-0">
                       Guardian's Name: <span className="font-bold">{result?.guardian}</span>
                     </div>
@@ -407,7 +407,7 @@ const StudentDetails = () => {
 
   return (
     <>
-      <Container className="flex flex-col items-center min-h-screen min-w-full bg-gradient-to-r from-[#FFEFBA] to-[#FFFFFF] p-6">
+      <Container className="flex flex-col items-center min-h-screen min-w-full bg-gray-400 p-6">
 
         {/* Title */}
         <div className="text-gray-900 font-extrabold text-5xl mt-6 tracking-wide text-center">

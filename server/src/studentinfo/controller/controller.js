@@ -201,13 +201,12 @@ const pushdata = async (req, res) => {
       marks,
       month_year,
     } = req.body;
-    const blocked_result = [];
+    const blocked_result = [0];
     const query1 = `INSERT INTO studentinfo(roll_no,name,prog, campus, batch,blocked_result)
     VALUES($1, $2, $3, $4, $5, $6)
     ON CONFLICT (roll_no)
     DO UPDATE SET
-    name = $2,
-    prog = $3, campus = $4, batch = $5
+    name = $2, prog = $3, campus = $4, batch = $5
     `;
     const studentinsert = await pool.query(query1, [
       roll_number,
@@ -258,11 +257,11 @@ const pushdata = async (req, res) => {
 
 const blockresult = async (req, res) => {
   try {
-    const { roll_number, block_result } = req.body;
+    const { roll_number, block_result } = req.body; 
     // console.log("---------------------------------",block_result)
     const query = `UPDATE studentinfo SET blocked_result = $1 WHERE roll_no = $2`;
     const result = await pool.query(query, [
-      JSON.stringify(block_result),
+      JSON.stringify(block_result[0]==null?[0]:block_result),
       roll_number,
     ]);
     res.status(200).json({ message: "Blocked result updated successfully" });
