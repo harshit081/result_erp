@@ -37,7 +37,10 @@ body {
     display: block;
   }
   * {
-    color: black !important; /* Ensure all text is black in the print view */
+    color: black !important; /*Ensure all text is black in the print view*/
+  }
+  .text-dseublue{
+    color: #0072B9 !important;
   }
 
   .page-break {
