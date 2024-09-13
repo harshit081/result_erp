@@ -40,7 +40,8 @@ function eval_grade(mark: string, credit: number) {
   if (!isNaN(parseFloat(mark)) && typeof(parseFloat(mark))=="number"){
     // console.log("1",mark)
     const marks = parseFloat(mark)
-    if (credit){
+    if (credit!=0){
+      console.log("credit",credit)
       if (marks >= 90) return "O";
       else if (marks >= 80) return "A+";
       else if (marks >= 70) return "A";
@@ -322,10 +323,10 @@ const StudentDetails = () => {
                     {eval_gp(mark?.marks) >= 4 ? mark.credit : (eval_gp(mark?.marks) == -1 ? "-" : 0)}
                   </div>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
-                    {eval_gp(mark?.marks)}
+                    {eval_grade(mark?.marks,mark?.credit)}
                   </div>
                   <div className="border text-[10px] p-[6px] w-[10%] flex justify-center">
-                    {mark.credit ? eval_gp(mark?.marks) : "-"}
+                    {mark.credit !=0 ? eval_gp(mark?.marks) : "-"}
                   </div>
                 </div>
               ))}
