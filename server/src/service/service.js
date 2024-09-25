@@ -23,15 +23,14 @@ const fetchAcadYears = async (roll_number) => {
 };
 
 const fetchResult = async (roll_number, semester, acad_year, aadhar) => {
-	const batch = await pool.query(queries.fetchBatch, [roll_number]);
+    const batch = await pool.query(queries.fetchBatch, [roll_number]);
 	const result = await pool.query(queries.fetchResult, [
-		roll_number,
+        roll_number,
 		batch.rows[0].batch,
 		acad_year,
 		semester,
 		aadhar,
 	]);
-
 	const structuredResults = {};
 
 	result.rows.forEach((row) => {
