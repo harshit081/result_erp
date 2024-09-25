@@ -3,7 +3,9 @@ const studentService = require('../service/service.js');
 const fetchSemester = async (req, res) => {
   try {
     const { roll_number, acad_year } = req.query;
+    console.log("fetchSemester")
     const semesters = await studentService.fetchSemesters(roll_number, acad_year);
+    console.log("fetchSemester2")
     res.json(semesters);
   } catch (e) {
     res.status(500).json({ message: e.message });

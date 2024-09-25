@@ -130,7 +130,6 @@ const StudentDetails = () => {
   const handleRollChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const roll = e.target.value.toUpperCase();
     setRollNumber(roll);
-
     const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchacadyear?roll_number=${roll}`;
     // console.log(url);
 
@@ -145,7 +144,9 @@ const StudentDetails = () => {
 
       const data = await response.json(); // Await response.json() to parse the data
       console.log('acad_year data:', data);
-      
+      setAcademicYear("")
+      setSemester("")
+      setSemesters(["Semester"])
       setAcademicYears(data)// Log the fetched data
     } catch (error) {
       console.error('Error fetching semester data:', error);
@@ -172,7 +173,13 @@ const StudentDetails = () => {
 
       const data = await response.json(); // Await response.json() to parse the data
       console.log('Semester data:', data);
-      setSemesters(data)// Log the fetched data
+      if(data==""){
+        setSemesters(['0'])
+      }
+      else{
+        setSemesters(data)// Log the fetched data
+      }
+      setSemester("")
     } catch (error) {
       console.error('Error fetching semester data:', error);
     }
@@ -180,8 +187,9 @@ const StudentDetails = () => {
 
 
   const handleSubmit = async () => {
+
     const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
-    // console.log(url)
+    console.log(url)
 
     try {
       const response = await fetch(url, {
@@ -518,7 +526,7 @@ const StudentDetails = () => {
             </div>
           </>
         ) : (
-          <div className="mt-10 text-gray-500 font-semibold text-lg">Nothing to show</div>
+          <div className="mt-10 text-gray-500 font-semibold text-lg">{semesters[0]=='0'?"Result Not Available":"Nothing to show"}</div>
         )}
       </Container>
     </>
