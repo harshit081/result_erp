@@ -23,6 +23,13 @@ const fetchAcadYears = async (roll_number) => {
 };
 
 const fetchResult = async (roll_number, semester, acad_year, aadhar) => {
+	const aadharNo = await pool.query(queries.fetchAadhar,[roll_number]);
+
+	if(aadharNo.rows[0].aadhar!=aadhar){
+		console.log(aadharNo.rows[0].aadhar)
+		return(0);
+	}
+
     const batch = await pool.query(queries.fetchBatch, [roll_number]);
 	const result = await pool.query(queries.fetchResult, [
         roll_number,

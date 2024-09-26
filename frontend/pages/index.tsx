@@ -135,6 +135,7 @@ const StudentDetails = () => {
   const [academicYear, setAcademicYear] = useState('');
 
   const [result, setResult] = useState<Student>();
+  const [valid, setValid] = useState(true);
 
   const componentRef = useRef<HTMLDivElement>(null);
   
@@ -214,6 +215,14 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 
   const handleSubmit = async () => {
+    setValid(true)
+    if (semester=='0'){
+      return
+    }
+    if (!rollNumber || !semester || !academicYear || !aadhar) {
+      console.error('Please fill in all fields');
+      return;
+    }
     const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
     // console.log(url)
     const headers = new Headers()
@@ -230,10 +239,15 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       }
 
       const data = await response.json(); // Await response.json() to parse the data
-      // console.log('Result data:', data); // Log the fetched result data
+
       setResult(data); // Store the result data in state
-      // console.log(result); 
     } catch (error) {
+      setResult(undefined)
+      // alert("Credentials Mismatch")  
+      setAcademicYear("")
+      setAadhar(null)
+      setSemester("")
+      setValid(false)
       console.error('Error fetching result data:', error);
     }
     // console.log(`Roll Number: ${rollNumber}`);
@@ -565,7 +579,7 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         </Box>
 
         {/* Result and Print Section */}
-        {result ? (
+        {result? (
           <>
             <ReactToPrint
               trigger={() => (
@@ -580,13 +594,11 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             </div>
           </>
         ) : (
-          <div className="mt-10 text-gray-500 font-semibold text-lg">{semesters[0]=='0'?"Result Not Available":"Nothing to show"}</div>
+          <div className={"mt-10 font-semibold text-lg "+ (valid?"text-gray-500":"text-red-900")}>{!valid?"Credentials Mismatch":(semesters[0]=='0'?"Result Not Available Kindly Contact Campus Director":"Nothing to show")}</div>
         )}
       </Container>
     </>
   );
-
-
 
 };
 

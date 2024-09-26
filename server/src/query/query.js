@@ -14,6 +14,7 @@ module.exports = {
       WHERE s.roll_no = $1
     `,
 	fetchBatch: `SELECT batch FROM studentinfo WHERE roll_no = $1`,
+  fetchAadhar:`SELECT aadhar FROM personalinfo WHERE rollno = $1`,
 	fetchResult: `
       SELECT s.roll_no AS rollno, s.prog, s.campus, r.semester, r.acad_year AS academic_year, 
       s.batch, c.course_code, c.course_name, c.credit, r.marks, r.month_year, p.name, p.mother, 

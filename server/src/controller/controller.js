@@ -35,6 +35,11 @@ const fetchResult = async (req, res) => {
 			acad_year,
 			aadhar
 		);
+		if(!result){
+			console.log(result)
+			res.status(404).json({ message: "Credential mismatch" });
+			return
+		}
 		res.json(result);
 	} catch (e) {
 		res.status(500).json({ message: "Error finding data" });
