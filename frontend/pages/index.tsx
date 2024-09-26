@@ -171,7 +171,9 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
       const data = await response.json(); // Await response.json() to parse the data
       console.log('acad_year data:', data);
-      
+      setAcademicYear("")
+      setSemester("")
+      setSemesters(["Semester"])
       setAcademicYears(data)// Log the fetched data
     } catch (error) {
       console.error('Error fetching semester data:', error);
@@ -184,7 +186,7 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const handleAcademicYearChange = async (e : SelectChangeEvent<string>, child: ReactNode) => {
     const acad_year = e.target.value as string;
     setAcademicYear(acad_year);
-    console.log("heheheh",acad_year)
+    // console.log("heheheh",acad_year)
     const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchsemester?roll_number=${rollNumber}&acad_year=${acad_year}`;
 
     try {
@@ -197,8 +199,14 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       }
 
       const data = await response.json(); // Await response.json() to parse the data
-      console.log('Semester data:', data);
-      setSemesters(data)// Log the fetched data
+      // console.log('Semester data:', data);
+      if(data==""){
+        setSemesters(['0'])
+      }
+      else{
+        setSemesters(data)// Log the fetched data
+      }
+      setSemester("")
     } catch (error) {
       console.error('Error fetching semester data:', error);
     }
@@ -206,12 +214,15 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 
   const handleSubmit = async () => {
-    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}&aadhar=${aadhar}`;
+    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
     // console.log(url)
+    const headers = new Headers()
+    headers.append('aadhar',`${aadhar}`);
 
     try {
       const response = await fetch(url, {
         method: 'GET',
+        headers: headers
       });
 
       if (!response.ok) {
@@ -225,11 +236,10 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     } catch (error) {
       console.error('Error fetching result data:', error);
     }
-
-    console.log(`Roll Number: ${rollNumber}`);
-    console.log(`Aadhar Number: ${aadhar}`)
-    console.log(`Semester: ${semester}`);
-    console.log(`Academic Year: ${academicYear}`);
+    // console.log(`Roll Number: ${rollNumber}`);
+    // console.log(`Aadhar Number: ${aadhar}`)
+    // console.log(`Semester: ${semester}`);
+    // console.log(`Academic Year: ${academicYear}`);
   };
 
 
@@ -570,9 +580,7 @@ const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             </div>
           </>
         ) : (
-          <div className="mt-10 text-gray-600 font-semibold text-xl">
-            Please Fill Out The Above Details!
-          </div>
+          <div className="mt-10 text-gray-500 font-semibold text-lg">{semesters[0]=='0'?"Result Not Available":"Nothing to show"}</div>
         )}
       </Container>
     </>

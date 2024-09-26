@@ -27,7 +27,8 @@ const fetchAcadYear = async (req, res) => {
 
 const fetchResult = async (req, res) => {
 	try {
-		const { roll_number, semester, acad_year, aadhar } = req.query;
+		const { roll_number, semester, acad_year } = req.query;
+		const aadhar = req.header('aadhar')
 		const result = await studentService.fetchResult(
 			roll_number,
 			semester,
