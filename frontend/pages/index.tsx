@@ -1,7 +1,18 @@
 "use client";
 import React, { useState, useRef, ReactNode } from 'react';
 import ReactToPrint from "react-to-print";
-import { Container, TextField, FormControl, InputLabel, Select, MenuItem, Button, Box, SelectChangeEvent } from '@mui/material';
+import { 
+  Container, 
+  TextField, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  MenuItem, 
+  Button, 
+  Box, 
+  SelectChangeEvent,
+} from '@mui/material';
+// import Navbar from '@/components/Navbar';
 // require('dotenv').config();
 
 interface Mark {
@@ -112,6 +123,8 @@ function sem_grade(sgpa: number) {
   else return "F";
 }
 
+
+
 const StudentDetails = () => {
   const [rollNumber, setRollNumber] = useState('');
 
@@ -124,12 +137,26 @@ const StudentDetails = () => {
   const [result, setResult] = useState<Student>();
 
   const componentRef = useRef<HTMLDivElement>(null);
+  
+  
+  const [aadhar, setAadhar] = useState<number | null>(null);
+
+const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const inputValue = e.target.value;
+
+  if (/^\d{0,12}$/.test(inputValue)) {
+    setAadhar(inputValue === "" ? null : Number(inputValue)); // Set as number if valid, or reset to null if empty
+  }
+};
+
+  
 
   //   const semesters = []
 
   const handleRollChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const roll = e.target.value.toUpperCase();
     setRollNumber(roll);
+
     const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchacadyear?roll_number=${roll}`;
     // console.log(url);
 
@@ -144,9 +171,7 @@ const StudentDetails = () => {
 
       const data = await response.json(); // Await response.json() to parse the data
       console.log('acad_year data:', data);
-      setAcademicYear("")
-      setSemester("")
-      setSemesters(["Semester"])
+      
       setAcademicYears(data)// Log the fetched data
     } catch (error) {
       console.error('Error fetching semester data:', error);
@@ -173,13 +198,7 @@ const StudentDetails = () => {
 
       const data = await response.json(); // Await response.json() to parse the data
       console.log('Semester data:', data);
-      if(data==""){
-        setSemesters(['0'])
-      }
-      else{
-        setSemesters(data)// Log the fetched data
-      }
-      setSemester("")
+      setSemesters(data)// Log the fetched data
     } catch (error) {
       console.error('Error fetching semester data:', error);
     }
@@ -187,9 +206,8 @@ const StudentDetails = () => {
 
 
   const handleSubmit = async () => {
-
-    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
-    console.log(url)
+    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}&aadhar=${aadhar}`;
+    // console.log(url)
 
     try {
       const response = await fetch(url, {
@@ -209,6 +227,7 @@ const StudentDetails = () => {
     }
 
     console.log(`Roll Number: ${rollNumber}`);
+    console.log(`Aadhar Number: ${aadhar}`)
     console.log(`Semester: ${semester}`);
     console.log(`Academic Year: ${academicYear}`);
   };
@@ -415,20 +434,24 @@ const StudentDetails = () => {
 
   return (
     <>
-      <Container className="flex flex-col items-center min-h-screen min-w-full bg-gray-400 p-6">
-
-        {/* Title */}
-        <div className="text-gray-900 font-extrabold text-5xl mt-6 tracking-wide text-center">
-          Student Results Portal
-        </div>
-
+      {/* <div>
+        <Navbar 
+          logoSrc="/Logos.png" 
+          profileImgSrc="/boy.png" 
+        />
+      </div> */}
+      <Container className="flex flex-col items-center min-h-screen min-w-full bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 p-6 mt-16">
         {/* Form Section */}
         <Box
           component="form"
           noValidate
           autoComplete="off"
-          className="bg-white p-10 rounded-xl shadow-2xl flex flex-col md:flex-row justify-between items-center gap-8 w-full max-w-[90%] md:max-w-[70%] mt-12"
+          className="bg-white p-10 rounded-2xl shadow-2xl flex flex-col justify-between items-center gap-8 w-full max-w-[90%] md:max-w-[60%] lg:max-w-[50%] mt-12"
         >
+          <div className='font-extrabold text-4xl text-pretty text-gray-800'>
+            Student Form
+          </div>
+          
           {/* Roll Number Input */}
           <TextField
             label="Enter Roll Number"
@@ -437,20 +460,42 @@ const StudentDetails = () => {
             onChange={handleRollChange}
             fullWidth
             margin="normal"
-            className="bg-gray-50 rounded-lg"
+            className="bg-gray-50 rounded-xl shadow-md"
             InputProps={{
               sx: {
                 '& input': {
-                  padding: '14px',
-                  borderRadius: '8px',
+                  padding: '16px',
+                  borderRadius: '10px',
                   fontSize: '16px',
                 },
               },
             }}
           />
 
+          {/* {Aadhar section} */}
+          <TextField
+            label="Enter Aadhar Number"
+            type="text" 
+            value={aadhar !== null ? aadhar : ""} 
+            onChange={handleAadharChange}
+            fullWidth
+            margin="normal"
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} 
+            className="bg-gray-50 rounded-xl shadow-md"
+            InputProps={{
+              sx: {
+                '& input': {
+                  padding: '16px',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                },
+              },
+            }}
+          />
+
+
           {/* Academic Year Dropdown */}
-          <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-lg">
+          <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-xl shadow-md">
             <InputLabel id="academic-year-label">Academic Year</InputLabel>
             <Select
               labelId="academic-year-label"
@@ -460,8 +505,8 @@ const StudentDetails = () => {
               className="bg-white"
               sx={{
                 '& .MuiSelect-select': {
-                  padding: '14px',
-                  borderRadius: '8px',
+                  padding: '16px',
+                  borderRadius: '10px',
                   fontSize: '16px',
                 },
               }}
@@ -475,7 +520,7 @@ const StudentDetails = () => {
           </FormControl>
 
           {/* Semester Dropdown */}
-          <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-lg">
+          <FormControl fullWidth margin="normal" className="bg-gray-50 rounded-xl shadow-md">
             <InputLabel id="semester-label">Semester</InputLabel>
             <Select
               labelId="semester-label"
@@ -485,8 +530,8 @@ const StudentDetails = () => {
               className="bg-white"
               sx={{
                 '& .MuiSelect-select': {
-                  padding: '14px',
-                  borderRadius: '8px',
+                  padding: '16px',
+                  borderRadius: '10px',
                   fontSize: '16px',
                 },
               }}
@@ -503,7 +548,7 @@ const StudentDetails = () => {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition duration-200"
+            className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-10 py-4 rounded-xl font-bold transition duration-300 shadow-md transform hover:scale-105"
           >
             Submit
           </Button>
@@ -514,19 +559,20 @@ const StudentDetails = () => {
           <>
             <ReactToPrint
               trigger={() => (
-                <Button className="mt-10 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg">
+                <Button className="mt-10 bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg shadow-md">
                   Print PDF
                 </Button>
               )}
               content={() => componentRef.current!}
             />
-
-            <div ref={componentRef} className="w-full h-full bg-white rounded-lg shadow-lg mt-1 p-8">
+            <div ref={componentRef} className="w-full h-full bg-white rounded-xl shadow-lg mt-1 p-8">
               {renderStudentResults()}
             </div>
           </>
         ) : (
-          <div className="mt-10 text-gray-500 font-semibold text-lg">{semesters[0]=='0'?"Result Not Available":"Nothing to show"}</div>
+          <div className="mt-10 text-gray-600 font-semibold text-xl">
+            Please Fill Out The Above Details!
+          </div>
         )}
       </Container>
     </>
