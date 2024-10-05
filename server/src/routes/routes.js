@@ -8,6 +8,7 @@ router.put('/blockresult',controller.blockResult)
 router.put('/unblockresult',controller.unblockResult)
 router.get('/fetchsemester',controller.fetchSemester)
 router.get('/fetchacadyear',controller.fetchAcadYear)
+router.get('/check',controller.checkValidation)
 
 
 module.exports = router;

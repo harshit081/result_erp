@@ -75,6 +75,14 @@ const unblockResult = async (req, res) => {
 	}
 };
 
+const checkValidation = async(req,res)=>{
+	try{
+		const {course_code, course_name, credit} = req.header;
+	} catch (error) {
+
+	}
+}
+
 module.exports = {
 	fetchSemester,
 	fetchAcadYear,
