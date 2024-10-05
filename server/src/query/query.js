@@ -27,6 +27,8 @@ module.exports = {
       AND r.course_code NOT IN (SELECT * FROM json_array_elements_text(s.blocked_result)) 
       ORDER BY s.roll_no, r.semester, c.course_code
     `,
+    fetchCourseDetail:`SELECT course_code, course_name, credit FROM course WHERE course_code = ANY($1)`
+    ,
 	insertStudent: `
       INSERT INTO studentinfo(roll_no, name, prog, campus, batch, blocked_result) 
       VALUES($1, $2, $3, $4, $5, $6) 

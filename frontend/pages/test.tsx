@@ -10,7 +10,7 @@ interface Mark {
   course_name: string;
   credit: number;
   full_mark: number;
-  marks_obtained: string ;
+  marks_obtained: string;
   date_of_exam: string;
   grade_point: number;
   grade: string;
@@ -39,20 +39,27 @@ interface Student {
   abc_id: string;
 }
 
-function tot_sem_cred(courses: Mark[]){
+interface CourseList {
+  course_code: string;
+  course_name: string;
+  credit: number;
+}
+
+
+function tot_sem_cred(courses: Mark[]) {
   let total_credit = 0;
   courses.forEach((course) => {
-    if(eval_gp(course.marks_obtained)){
+    if (eval_gp(course.marks_obtained)) {
       total_credit += parseFloat(course.credit.toString());
     }
   })
   return total_credit;
 }
 function eval_grade(mark: string, credit: number) {
-  if (!isNaN(parseFloat(mark)) && typeof(parseFloat(mark))=="number"){
+  if (!isNaN(parseFloat(mark)) && typeof (parseFloat(mark)) == "number") {
     // console.log("1",mark)
     const marks = parseFloat(mark)
-    if (credit){
+    if (credit) {
       if (marks >= 90) return "O";
       else if (marks >= 80) return "A+";
       else if (marks >= 70) return "A";
@@ -62,32 +69,32 @@ function eval_grade(mark: string, credit: number) {
       else if (marks >= 40) return "P";
       else return "F";
     }
-    else{
+    else {
       if (marks >= 40) {
         return "S";
       } else {
         return "N"
       }
     }
-  } 
-  else{
+  }
+  else {
     // console.log("mark",mark)
     return mark;
-  }  
+  }
 }
 
 function sgpa_calc(marks: Mark[]) {
   let total_credit = 0;
   let ci_pi = 0;
   marks.map((mark) => {
-    total_credit += (mark.grade_point==0 || mark.grade_point==-1) ? 0 : mark.credit ;
-    ci_pi += mark.credit * ((mark.grade_point==0 || mark.grade_point==-1) ? 0 : mark.grade_point);
+    total_credit += (mark.grade_point == 0 || mark.grade_point == -1) ? 0 : mark.credit;
+    ci_pi += mark.credit * ((mark.grade_point == 0 || mark.grade_point == -1) ? 0 : mark.grade_point);
   });
   return total_credit > 0 ? parseFloat((ci_pi / total_credit).toFixed(2)) : 0;
 }
 
 function eval_gp(mark: string) {
-  if (typeof(parseFloat(mark))=="number"){
+  if (typeof (parseFloat(mark)) == "number") {
     const marks = parseFloat(mark)
     if (marks >= 90) return 10;
     else if (marks >= 80) return 9;
@@ -97,7 +104,7 @@ function eval_gp(mark: string) {
     else if (marks >= 45) return 5;
     else if (marks >= 40) return 4;
     else return 0;
-  } 
+  }
   else return -1;
 }
 
@@ -117,8 +124,12 @@ const Home: React.FC = () => {
   const [studentDataJSON, setStudentDataJSON] = useState<Student[] | null>(
     null
   );
+
+  const [structure, setStructure] = useState<String>("vertical")
   const [completeData, setCompleteData] = useState<any[]>();
   const componentRef = useRef<HTMLDivElement>(null);
+
+
 
   const handleFileConfirmed = (file: File | null, isConfirmed: boolean) => {
     if (file && isConfirmed) {
@@ -194,13 +205,14 @@ const Home: React.FC = () => {
         const students: Student[] = [];
 
         if (data[0]["Roll No"]) {
+          setStructure("vertical")
           setCompleteData(data)
           parseVerticalStructure(data, students); //TEMPLATE 1
           // console.log(data, "student1", students)
         } else {
-
+          setStructure("horizontal")
           parseVerticalStructure(parseHorizontalStructure(data), students);  //TEMPLATE 2
-          setCompleteData(parseHorizontalStructure(data))
+          setCompleteData(data)
           // console.log(parseHorizontalStructure(data), "student2", students)
         }
 
@@ -274,70 +286,81 @@ const Home: React.FC = () => {
     });
   };
 
-  const parseHorizontalStructure = (data: any[]) => {
+  const parseHorizontalStructure = (data: any[], output = 0) => {
     const updatedData: any[] = [];
     const headers = Object.keys(data[0]);
     const creditRow = Object.values(data[3]).slice(6);
     const subjectCodes = Object.values(data[2]).slice(6);
     const subjectNames = Object.values(data[4]).slice(6);
 
-    const newHeaders = [
-      "Std Name",
-      "Roll No",
-      "Inst Name",
-      "Pro Category",
-      "Program",
-      "Sem",
-      "Course Code",
-      "Credit",
-      "Sub Name",
-      "Mark Obt",
-      "Full Mark",
-      "Batch",
-      "Academic Year",
-      "Date of Exam",
-    ];
+    if (output) { //this condition is for fetching course detail from horizontal structured csv
+      const courses = subjectCodes.map((item, index) => ({
+        course_code: subjectCodes[index],
+        course_name: subjectNames[index],
+        credit: creditRow[index]
+      }));
+      return courses
+    }
 
-    for (var k = 5; k < data.length; k++) {
-      const val = Object.values(data[k]);
-      console.log(val)
-      for (var i = 0; i < subjectCodes.length; i++) {
-        let flag = 0;
-        let obj: { [key: string]: any } = {};
-        for (var j = 0; j < 14; j++) {
-          if (j <= 5) {
-            obj[newHeaders[j]] = val[j];
-          } else if (j == 10) {
-            obj[newHeaders[j]] = 100;
-          } else if (j == 11) {
-            obj[newHeaders[j]] = headers[0];
-          } else if (j == 12) {
-            obj[newHeaders[j]] = data[0][headers[0]];
-          } else if (j == 13) {
-            obj[newHeaders[j]] = data[1][headers[0]];
-          } else if (j == 6) {
-            obj[newHeaders[j]] = subjectCodes[i];
-          } else if (j == 7) {
-            obj[newHeaders[j]] = creditRow[i];
-          } else if (j == 8) {
-            obj[newHeaders[j]] = subjectNames[i];
-          } else if (j == 9) {
-            if (val[6 + i]) {
-              obj[newHeaders[j]] = val[6 + i];
-            } else {
-              flag = 1
+    else {
+      const newHeaders = [
+        "Std Name",
+        "Roll No",
+        "Inst Name",
+        "Pro Category",
+        "Program",
+        "Sem",
+        "Course Code",
+        "Credit",
+        "Sub Name",
+        "Mark Obt",
+        "Full Mark",
+        "Batch",
+        "Academic Year",
+        "Date of Exam",
+      ];
+
+      for (var k = 5; k < data.length; k++) {
+        const val = Object.values(data[k]);
+        // console.log(val)
+        for (var i = 0; i < subjectCodes.length; i++) {
+          let flag = 0;
+          let obj: { [key: string]: any } = {};
+          for (var j = 0; j < 14; j++) {
+            if (j <= 5) {
+              obj[newHeaders[j]] = val[j];
+            } else if (j == 10) {
+              obj[newHeaders[j]] = 100;
+            } else if (j == 11) {
+              obj[newHeaders[j]] = headers[0];
+            } else if (j == 12) {
+              obj[newHeaders[j]] = data[0][headers[0]];
+            } else if (j == 13) {
+              obj[newHeaders[j]] = data[1][headers[0]];
+            } else if (j == 6) {
+              obj[newHeaders[j]] = subjectCodes[i];
+            } else if (j == 7) {
+              obj[newHeaders[j]] = creditRow[i];
+            } else if (j == 8) {
+              obj[newHeaders[j]] = subjectNames[i];
+            } else if (j == 9) {
+              if (val[6 + i]) {
+                obj[newHeaders[j]] = val[6 + i];
+              } else {
+                flag = 1
+              }
             }
           }
-        }
-        if (flag) {
-          flag = 0
-          continue;
-        } else {
-          updatedData.push(obj)
+          if (flag) {
+            flag = 0
+            continue;
+          } else {
+            updatedData.push(obj)
+          }
         }
       }
+      return updatedData;
     }
-    return updatedData;
   };
 
   const pushData = async (studentdata: any) => {
@@ -351,58 +374,102 @@ const Home: React.FC = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          roll_number: studentdata["Roll No"],
-          name: studentdata["Std Name"],
-          program: studentdata["Pro Category"] + ' ' + studentdata["Program"],
-          campus: studentdata["Inst Name"],
+          roll_number: studentdata["Roll No"].trim(),
+          name: studentdata["Std Name"].trim(),
+          program: studentdata["Pro Category"].trim() + ' ' + studentdata["Program"].trim(),
+          campus: studentdata["Inst Name"].trim(),
           batch: studentdata["Batch"],
-          acad_year: studentdata["Academic Year"],
+          acad_year: studentdata["Academic Year"].trim(),
           semester: studentdata["Sem"],
-          course_code: studentdata["Course Code"],
+          course_code: studentdata["Course Code"].trim(),
           credit: studentdata["Credit"],
-          course_name: studentdata["Sub Name"],
-          marks: studentdata["Mark Obt"],
+          course_name: studentdata["Sub Name"].trim(),
+          marks: studentdata["Mark Obt"].trim(),
           month_year: studentdata["Date of Exam"],
         }),
       });
-      return(response.ok ? (true) : (false))
+      return (response.ok ? (true) : (false))
     } catch (e) {
       alert("Invalid file type")
     }
   }
+
+  const checkCourse = async (course_list: CourseList[]) => {
+    console.log(course_list)
+    try {
+      const url = `http://localhost:5000/api/result/check`
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ course_list }),
+      })
+      const data = await response.json();
+
+      if (response.ok) {
+        return data.conflicts  // Log conflicts if any
+      } else {
+        console.error("Error in API call:", data);
+      }
+    } catch (error) {
+      console.error("Error in API request:", error);
+    };
+  };
+
+
   const handlePush = async () => {
     const studData = completeData ? completeData : [];
-    let studentsdata;
-    if (studData[0]["Roll No"]) {
-      studentsdata = studData;
+    let course_list: CourseList[];
+    if (structure == "vertical") {
+      console.log(studData);
+      course_list = studData.map(item => ({
+        course_code: item["Course Code"],
+        course_name: item["Sub Name"],
+        credit: item["Credit"]
+      }));
+      console.log("test_course", course_list);
     } else {
-      studentsdata = parseHorizontalStructure(studData);
+      course_list = parseHorizontalStructure(studData, 1);
+      console.log("test_course", course_list);
     }
-    let successCount = 0;
+  
+    let valid = false;
     try {
-      studentsdata.map((studentdata) => {
-        // console.log(studentdata)
-        pushData(studentdata).then((success) => {
-          if (success) {
-            successCount++;
-          }
-          else{
-            console.log(studentdata)
-          }
-        });
-      });
-      // Wait for all promises to resolve
-      await Promise.all(studentsdata.map((studentdata) => pushData(studentdata)));
-      if (successCount === studentsdata.length) {
-        alert("All rows successfully pushed!");
-      } else {
-        alert("Some rows failed to push. Please check the data.");
-      }
-    } catch (e) {
-      alert("Invalid format");
+      const conflicts = await checkCourse(course_list);  // Await the API call for proper handling
+      console.log("Conflicts Found", conflicts);
+      valid = conflicts.length === 0;
+    } catch (error) {
+      console.error("Error during course check:", error);
+      alert("Error during course check");
       return;
     }
+  
+    if (valid) {
+      let studentsdata = studData; // for pushing data into db
+      if (structure != "vertical") {
+        studentsdata = parseHorizontalStructure(studData);
+        console.log(studData);
+      }
+  
+      try {
+        // Map all pushData calls and wait for all of them to resolve
+        const results = await Promise.all(studentsdata.map((studentdata) => pushData(studentdata)));
+  
+        // Count successful pushes
+        const successCount = results.filter(success => success).length;
+  
+        if (successCount === studentsdata.length) {
+          alert("All rows successfully pushed!");
+        } else {
+          alert(`Some rows failed to push. ${studentsdata.length - successCount} rows failed.`);
+        }
+      } catch (e) {
+        alert("Invalid format");
+      }
+    }
   };
+  
 
   const renderStudentResults = (student: Student) => {
     return student.results.flatMap((result) => (
@@ -639,15 +706,15 @@ const Home: React.FC = () => {
       <div className="bg-gray-50 min-h-screen">
         {/* Page Wrapper */}
         <div className="pt-[70px] max-sm:pt-[150px] px-4 sm:mx-[50px]">
-  
+
           {/* Header Section */}
           <div className="bg-blue-900 py-4 px-6 sm:mx-8 rounded-lg shadow-lg">
             <h1 className="text-3xl text-white font-extrabold text-center">Teacher Dashboard: Student Results</h1>
           </div>
-  
+
           {/* Upload Sections */}
           <div className="p-6 sm:flex justify-between mt-12 space-y-8 sm:space-y-0 sm:space-x-6">
-  
+
             {/* Upload Student Result */}
             <div className="w-full sm:w-[48%] bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 ease-in-out">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Upload Student Result</h2>
@@ -656,7 +723,7 @@ const Home: React.FC = () => {
               </p>
               <FileUploadButton onConfirm={handleFileConfirmed} />
             </div>
-  
+
             {/* Upload Block Result */}
             <div className="w-full sm:w-[48%] bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 ease-in-out">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Upload Block Result</h2>
@@ -666,7 +733,7 @@ const Home: React.FC = () => {
               <FileUploadButton onConfirm={handleBlockConfirmed} />
             </div>
           </div>
-  
+
           {/* Action Buttons */}
           {isSubmitted && studentDataJSON && (
             <div className="flex space-x-6 mt-10 ml-6">
@@ -678,7 +745,7 @@ const Home: React.FC = () => {
               >
                 Push Results
               </Button>
-  
+
               <ReactToPrint
                 trigger={() => (
                   <Button
@@ -693,7 +760,7 @@ const Home: React.FC = () => {
               />
             </div>
           )}
-  
+
           {/* Display Student Results */}
           {isSubmitted && studentDataJSON && (
             <div ref={componentRef} className="bg-white p-6 mt-8 rounded-lg shadow-lg">
@@ -705,8 +772,8 @@ const Home: React.FC = () => {
       </div>
     </>
   );
-  
-  
+
+
 };
 
 export default Home;

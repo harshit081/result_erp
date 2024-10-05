@@ -75,13 +75,15 @@ const unblockResult = async (req, res) => {
 	}
 };
 
-const checkValidation = async(req,res)=>{
-	try{
-		const {course_code, course_name, credit} = req.header;
-	} catch (error) {
-
-	}
-}
+const checkCourses = async (req, res) => {
+    try {
+        const { course_list } = req.body; 
+        const conflicts = await studentService.validateCourses(course_list);
+        res.json({ conflicts });
+    } catch (error) {
+        res.status(500).json({ message: "Error processing course list", error: error.message });
+    }
+};
 
 module.exports = {
 	fetchSemester,
@@ -90,4 +92,5 @@ module.exports = {
 	pushData,
 	blockResult,
 	unblockResult,
+	checkCourses
 };
