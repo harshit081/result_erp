@@ -32,9 +32,29 @@ body {
   }
 }
 
+
+
 @media print {
-  .print-only {
-    display: block;
+  @page {
+    size: A4 landscape; /* Force A4 size and landscape orientation */
+  }
+  body { /* Scale the content down */
+    transform-origin: top left; /* Ensure scaling starts from the top left */
+    width: 100%;
+    
+  }
+
+  /* Prevent page breaks within elements */
+  .print-container {
+    page-break-inside: avoid;
+    page-break-after: auto;
+    width: 100%;
+    overflow: hidden; /* Hide overflowing content */
+  }
+
+  /* Optionally hide elements like buttons or unnecessary sections */
+  .no-print {
+    display: none !important;
   }
   * {
     color: black !important; /*Ensure all text is black in the print view*/
@@ -74,6 +94,6 @@ body {
 
 .page {
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
