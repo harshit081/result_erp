@@ -48,4 +48,6 @@ module.exports = {
       marks = $5, month_year = $6
     `,
 	updateBlockedResult: `UPDATE studentinfo SET blocked_result = $1 WHERE roll_no = $2`,
+
+  fetchPersonalDetails:`SELECT * FROM personalinfo WHERE rollno = $1`,
 };

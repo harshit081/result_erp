@@ -9,6 +9,6 @@ router.put('/unblockresult',controller.unblockResult)
 router.get('/fetchsemester',controller.fetchSemester)
 router.get('/fetchacadyear',controller.fetchAcadYear)
 router.post('/check',controller.checkCourses)
-
+router.get('/fetchpersonal',controller.fetchPersonalDetails)
 
 module.exports = router;

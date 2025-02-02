@@ -85,6 +85,18 @@ const checkCourses = async (req, res) => {
     }
 };
 
+const fetchPersonalDetails = async (req, res) => {
+	try{
+		const roll_number = req.query.roll_number;
+		// console.log(1,roll_number)
+		const personal = await studentService.fetchPersonalDetails(roll_number);
+		// console.log(personal)
+		res.json(personal);
+	} catch (error) {
+		res.status(500).json({ message: "Error fetching personal details" });
+	}
+}
+
 module.exports = {
 	fetchSemester,
 	fetchAcadYear,
@@ -92,5 +104,6 @@ module.exports = {
 	pushData,
 	blockResult,
 	unblockResult,
-	checkCourses
+	checkCourses,
+	fetchPersonalDetails
 };

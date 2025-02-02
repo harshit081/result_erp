@@ -22,24 +22,31 @@ const fetchAcadYears = async (roll_number) => {
 	return result.rows.map((row) => row.acad_year);
 };
 
+const fetchPersonalDetails = async (roll_number) => {
+	const result = await pool.query(queries.fetchPersonalDetails,[roll_number]);
+	// console.log(roll_number)
+	// console.log(result)
+	return result.rows;
+};
+
 const fetchResult = async (roll_number, semester, acad_year, aadhar) => {
 	const aadharNo = await pool.query(queries.fetchAadhar,[roll_number]);
-
+	
 	if(aadharNo.rows[0].aadhar!=aadhar){
 		console.log(aadharNo.rows[0].aadhar)
 		return(0);
 	}
-
+	
     const batch = await pool.query(queries.fetchBatch, [roll_number]);
 	const result = await pool.query(queries.fetchResult, [
-        roll_number,
+		roll_number,
 		batch.rows[0].batch,
 		acad_year,
 		semester,
 		aadhar,
 	]);
 	const structuredResults = {};
-
+	
 	result.rows.forEach((row) => {
 		const {
 			rollno,
@@ -83,7 +90,7 @@ const fetchResult = async (roll_number, semester, acad_year, aadhar) => {
 			month_year,
 		});
 	});
-
+	
 	return Object.values(structuredResults).map((student) => ({
 		...student,
 		semesters: Object.values(student.semesters),
@@ -147,14 +154,14 @@ const unblockResult = async (roll_number, unblock_result) => {
 	]);
 };
 const validateCourses = async (coursesArray) => {
-    const conflicts = [];
+	const conflicts = [];
     
     // Prepare an array of course codes to batch query
     const courseCodes = coursesArray.map(course => course.course_code.trim());
-
+	
     // Fetch all course details for the course codes in a single query
     const result = await pool.query(
-        queries.fetchCourseDetail,
+		queries.fetchCourseDetail,
         [courseCodes]
     );
 
@@ -162,25 +169,26 @@ const validateCourses = async (coursesArray) => {
     
 	// Create a map for easy lookup of course details by course code
     const courseMap = new Map(result.rows.map(course => [course.course_code, course]));
-
+	
     // Iterate through the coursesArray and compare with the database results
     coursesArray.forEach(({ course_code, course_name, credit }, index) => {
-        const dbCourse = courseMap.get(course_code.trim());
-
+		const dbCourse = courseMap.get(course_code.trim());
+		
         if (dbCourse) {
             const dbName = dbCourse.course_name.trim();
             const dbCredit = dbCourse.credit;
-
+			
             // Check for discrepancies
             if (dbName !== course_name.trim() || dbCredit !== credit) {
-                conflicts.push(index); // Add index to conflicts if there's a mismatch
+				conflicts.push(index); // Add index to conflicts if there's a mismatch
                 console.log(`Conflict at index ${index}: Provided - (${course_name}, ${credit}), DB - (${dbName}, ${dbCredit})`);
             }
         }
     });
-
+	
     return conflicts;
 };
+
 
 module.exports = {
 	fetchSemesters,
@@ -189,5 +197,6 @@ module.exports = {
 	pushData,
 	blockResult,
 	unblockResult,
-	validateCourses
+	validateCourses,
+	fetchPersonalDetails
 };
