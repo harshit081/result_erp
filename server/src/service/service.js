@@ -113,6 +113,7 @@ const pushData = async (data) => {
 		month_year,
 	} = data;
 	const blocked_result = [0];
+	console.log(data);
 	await pool.query(queries.insertStudent, [
 		roll_number,
 		name,

@@ -609,7 +609,7 @@ const StudentDetails = () => {
               margin="normal"
               className="bg-gray-50 rounded-xl w-[95%]"
             >
-              <InputLabel id="semester-label">BRANCH</InputLabel>
+              <InputLabel id="semester-label">SEMESTER</InputLabel>
               <Select
                 labelId="semester-label"
                 value={semester}

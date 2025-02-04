@@ -169,7 +169,7 @@ const Home: React.FC = () => {
   const handleFetchPersonal = async (roll: string) => {
     const url = `http://localhost:5000/api/result/fetchpersonal?roll_number=${encodeURIComponent(
       roll
-    )}`;
+    )}`; 
     console.log(url);
     try {
       const response = await fetch(url, {
@@ -281,8 +281,12 @@ const Home: React.FC = () => {
         students.forEach(async (student) => {
           const result = await handleFetchPersonal(student.rollno);
           const response = result[0];
-          student.father = capitalizeEachWord(response.father);
-          student.mother = capitalizeEachWord(response.mother);
+          student.father = response?.father
+            ? capitalizeEachWord(response.father)
+            : "";
+          student.mother = response?.mother
+            ? capitalizeEachWord(response?.mother)
+            : "";
           student.guardian = response.guardian;
           student.abc_id = response.abc;
           student.name = response.name.toUpperCase();
@@ -439,6 +443,29 @@ const Home: React.FC = () => {
     // console.log("single",studentdata)
     try {
       const url = `http://localhost:5000/api/result/pushdata`;
+      console.log("studentdata 446", studentdata);
+      // const userResponse: boolean = true;
+      // if (userResponse) {
+      //   console.log("User clicked NO");
+      // } else {
+      //   const check = {
+      //     roll_number: studentdata["Roll No"]?.trim() || "",
+      //     name: studentdata["Std Name"]?.trim() || "",
+      //     program:
+      //       (studentdata["Pro Category"]?.trim() || "") +
+      //       " " +
+      //       (studentdata["Program"]?.trim() || ""),
+      //     campus: studentdata["Inst name"]?.trim() || "",
+      //     batch: studentdata["Batch"] || "",
+      //     acad_year: studentdata["Academic Year"]?.trim() || "",
+      //     semester: studentdata["Sem"] || "",
+      //     course_code: studentdata["Course Code"]?.trim() || "",
+      //     credit: studentdata["Credit"] || "",
+      //     course_name: studentdata["Sub Name"]?.trim() || "",
+      //     marks: studentdata["Mark Obt"]?.trim() || "",
+      //     month_year: studentdata["Date of Exam"] || "",
+      //   };
+      // console.log("check 471", check);
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -447,10 +474,7 @@ const Home: React.FC = () => {
         body: JSON.stringify({
           roll_number: studentdata["Roll No"].trim(),
           name: studentdata["Std Name"].trim(),
-          program:
-            studentdata["Pro Category"].trim() +
-            " " +
-            studentdata["Program"].trim(),
+          program: progName[studentdata["Program"].trim()],
           campus: studentdata["Inst Name"].trim(),
           batch: studentdata["Batch"],
           acad_year: studentdata["Academic Year"].trim(),
@@ -461,14 +485,16 @@ const Home: React.FC = () => {
           marks: studentdata["Mark Obt"].trim(),
           month_year: studentdata["Date of Exam"],
         }),
-      });
+      }); 
+      console.log("response 471", response);
       return response.ok ? true : false;
-    } catch (e) {
-      alert("Invalid file type");
+      // } 
+    } catch (e) { 
+      alert("Invalid file type 478");
     }
   };
 
-  const checkCourse = async (course_list: CourseList[]) => {
+  const checkCourse = async (course_list: CourseList[]) => { 
     console.log(course_list);
     try {
       const url = `http://localhost:5000/api/result/check`;
@@ -495,23 +521,24 @@ const Home: React.FC = () => {
     const studData = completeData ? completeData : [];
     let course_list: CourseList[];
     if (structure == "vertical") {
-      console.log(studData);
+      console.log("studData 509", studData);
       course_list = studData.map((item) => ({
         course_code: item["Course Code"],
         course_name: item["Sub Name"],
         credit: item["Credit"],
       }));
-      console.log("test_course", course_list);
+      console.log("test_course 515", course_list);
     } else {
       course_list = parseHorizontalStructure(studData, 1);
-      console.log("test_course", course_list);
+      console.log("test_course 518", course_list);
     }
 
     let valid = false;
     try {
       const conflicts = await checkCourse(course_list); // Await the API call for proper handling
-      console.log("Conflicts Found", conflicts);
+      console.log("Conflicts Found 524", conflicts);
       valid = conflicts.length === 0;
+      console.log("valid 526", valid);
     } catch (error) {
       console.error("Error during course check:", error);
       alert("Error during course check");
@@ -522,7 +549,7 @@ const Home: React.FC = () => {
       let studentsdata = studData; // for pushing data into db
       if (structure != "vertical") {
         studentsdata = parseHorizontalStructure(studData);
-        console.log(studData);
+        console.log("studData 536", studData);
       }
 
       try {
@@ -540,6 +567,10 @@ const Home: React.FC = () => {
           alert(
             `Some rows failed to push. ${studentsdata.length - successCount
             } rows failed.`
+          );
+          console.log(
+            `Some rows failed to push. ${studentsdata.length - successCount
+            } rows failed.`, results
           );
         }
       } catch (e) {
@@ -576,8 +607,8 @@ const Home: React.FC = () => {
                   Delhi Skill & Entrepreneurship University
                 </div>
                 <div className="text-dseublue text-md font-extrabold font-serif">
-                  (A State University Established under Govt. of NCT of Delhi Act
-                  04 of 2020)
+                  (A State University Established under Govt. of NCT of Delhi
+                  Act 04 of 2020)
                 </div>
               </div>
               <div className="text-center flex flex-col mx-auto">
@@ -588,7 +619,7 @@ const Home: React.FC = () => {
                   </span>
                 </div>
                 <div className="text-lg font-bold font-serif mb-4">
-                  {progName[student.program]}-Batch{" "}
+                  {student.program}-Batch{" "}
                   <span className="font-sans">{result.batch}</span>
                 </div>
               </div>
@@ -603,7 +634,9 @@ const Home: React.FC = () => {
                   <div className="flex-col">
                     <div className="p-0">
                       Student Name:{" "}
-                      <span className="font-bold uppercase">{student.name}</span>
+                      <span className="font-bold uppercase">
+                        {student.name}
+                      </span>
                     </div>
                     <div className="p-0">
                       Roll No.:{" "}
@@ -713,11 +746,15 @@ const Home: React.FC = () => {
                     <td className="border !border-black text-[11px] p- font-black">
                       Total credits as on date
                     </td>
-                    <td className="border !border-black text-[11px] p- font-black">SGPA</td>
+                    <td className="border !border-black text-[11px] p- font-black">
+                      SGPA
+                    </td>
                     <td className="border !border-black text-[11px] p- font-black">
                       Semester Grade
                     </td>
-                    <td className="border !border-black text-[11px] p- font-black">CGPA</td>
+                    <td className="border !border-black text-[11px] p- font-black">
+                      CGPA
+                    </td>
                     <td className="border !border-black text-[11px] p- font-black">
                       CGPA Grade
                     </td>
@@ -836,10 +873,7 @@ const Home: React.FC = () => {
 
           {/* Display Student Results */}
           {isSubmitted && studentDataJSON && (
-            <div
-              ref={componentRef}
-              className="p-6 mt-8 rounded-lg shadow-lg"
-            >
+            <div ref={componentRef} className="p-6 mt-8 rounded-lg shadow-lg">
               {studentDataJSON.map((student, index) => (
                 <div key={index} className="break-after-page">
                   {renderStudentResults(student)}
