@@ -1,4 +1,5 @@
 export interface Mark {
+  marks_obtained(marks_obtained: any): unknown;
   course_code: string;
   course_name: string;
   credit: number;

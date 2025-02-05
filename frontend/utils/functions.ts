@@ -4,24 +4,24 @@ import { ReactNode } from "react";
 
 export function eval_grade(mark: string, credit: number) {
   if (!isNaN(parseFloat(mark)) && typeof parseFloat(mark) == "number") {
+    // console.log("1",mark)
     const marks = parseFloat(mark);
-    if (credit != 0) {
+    if (credit) {
       if (marks >= 90) return "O";
       else if (marks >= 80) return "A+";
       else if (marks >= 70) return "A";
       else if (marks >= 60) return "B+";
-      else if (marks >= 50) return "B";
-      else if (marks >= 45) return "C";
-      else if (marks >= 40) return "P";
+      else if (marks >= 55) return "B";
       else return "F";
     } else {
-      if (marks >= 40) {
+      if (marks >= 55) {
         return "S";
       } else {
         return "N";
       }
     }
   } else {
+    // console.log("mark",mark)
     return mark;
   }
 }
@@ -33,9 +33,7 @@ export function eval_gp(mark: string) {
     else if (marks >= 80) return 9;
     else if (marks >= 70) return 8;
     else if (marks >= 60) return 7;
-    else if (marks >= 50) return 6;
-    else if (marks >= 45) return 5;
-    else if (marks >= 40) return 4;
+    else if (marks >= 55) return 6;
     else return 0;
   } else return -1;
 }
@@ -73,8 +71,6 @@ export function sem_grade(sgpa: number) {
   else if (sgpa >= 7.5) return "A";
   else if (sgpa >= 6.5) return "B+";
   else if (sgpa >= 5.5) return "B";
-  else if (sgpa >= 4.5) return "C";
-  else if (sgpa >= 4) return "P";
   else return "F";
 }
 
