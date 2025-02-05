@@ -25,6 +25,7 @@ import {
   handleRollChange,
   handleAcademicYearChange,
   handleSubmit,
+  sumUptoIndex
 } from "../utils/functions"; // Corrected import path
 
 const commonInputClass = "rounded w-full md:w-[95%]";
@@ -65,7 +66,7 @@ const StudentDetails = () => {
       <>
         <div key={result.semesters[0]?.semester} className="w-full">
           {result.abc && (
-            <div className="font-bold text-sm mt-0">ABC ID : {result.abc}</div>
+            <div className="font-bold font-mono text-sm mt-0">ABC ID : {result.abc}</div>
           )}
           <div className="flex w-full pt-1">
             <div className="flex w-1/5 items-center">
@@ -268,15 +269,25 @@ const StudentDetails = () => {
         <td className="border !border-black text-[10px] p-2 text-center font-black">
           {result ? tot_sem_cred(result.semesters[0].courses) : "-"}
         </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">-</td>
+        <td className="border !border-black text-[10px] p-2 text-center font-black">
+          {result ? sumUptoIndex(result.sem_credits, parseInt(semester)-1) : "-"}
+        </td>
         <td className="border !border-black text-[10px] p-2 text-center font-black">
           {result ? sgpa_calc(result.semesters[0].courses) : "-"}
         </td>
         <td className="border !border-black text-[10px] p-2 text-center font-black">
           {result ? sem_grade(sgpa_calc(result.semesters[0].courses)) : "-"}
         </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">-</td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">-</td>
+        <td className="border !border-black text-[10px] p-2 text-center font-black">
+                  {
+                    result? (sumUptoIndex(result.cipi, parseInt(semester)-1) / sumUptoIndex(result.sem_credits, parseInt(semester)-1)).toFixed(2) : "-"
+                  }
+        </td>
+        <td className="border !border-black text-[10px] p-2 text-center font-black">
+          {
+            result? sem_grade(sumUptoIndex(result.cipi, parseInt(semester)-1) / sumUptoIndex(result.sem_credits, parseInt(semester)-1)) : "-"
+          }
+        </td>
         <td className="border !border-black text-[10px] p-2 text-center font-black align-middle">ABS</td>
       </tr>
     </tbody>

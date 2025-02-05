@@ -46,64 +46,64 @@ const fetchResult = async (req, res) => {
 	}
 };
 
-const pushData = async (req, res) => {
-	try {
-		await studentService.pushData(req.body);
-		res.status(200).json({ message: "Data pushed successfully" });
-	} catch (error) {
-		res.status(500).json({ message: "Error pushing data" });
-	}
-};
+// const pushData = async (req, res) => {
+// 	try {
+// 		await studentService.pushData(req.body);
+// 		res.status(200).json({ message: "Data pushed successfully" });
+// 	} catch (error) {
+// 		res.status(500).json({ message: "Error pushing data" });
+// 	}
+// };
 
-const blockResult = async (req, res) => {
-	try {
-		const { roll_number, block_result } = req.body;
-		await studentService.blockResult(roll_number, block_result);
-		res.status(200).json({ message: "Blocked result updated successfully" });
-	} catch (error) {
-		res.status(500).json({ message: "Error updating blocked result" });
-	}
-};
+// const blockResult = async (req, res) => {
+// 	try {
+// 		const { roll_number, block_result } = req.body;
+// 		await studentService.blockResult(roll_number, block_result);
+// 		res.status(200).json({ message: "Blocked result updated successfully" });
+// 	} catch (error) {
+// 		res.status(500).json({ message: "Error updating blocked result" });
+// 	}
+// };
 
-const unblockResult = async (req, res) => {
-	try {
-		const { roll_number, unblock_result } = req.body;
-		await studentService.unblockResult(roll_number, unblock_result);
-		res.status(200).json({ message: "Unblocked result updated successfully" });
-	} catch (error) {
-		res.status(500).json({ message: "Error updating unblocked result" });
-	}
-};
+// const unblockResult = async (req, res) => {
+// 	try {
+// 		const { roll_number, unblock_result } = req.body;
+// 		await studentService.unblockResult(roll_number, unblock_result);
+// 		res.status(200).json({ message: "Unblocked result updated successfully" });
+// 	} catch (error) {
+// 		res.status(500).json({ message: "Error updating unblocked result" });
+// 	}
+// };
 
-const checkCourses = async (req, res) => {
-    try {
-        const { course_list } = req.body; 
-        const conflicts = await studentService.validateCourses(course_list);
-        res.json({ conflicts });
-    } catch (error) {
-        res.status(500).json({ message: "Error processing course list", error: error.message });
-    }
-};
+// const checkCourses = async (req, res) => {
+//     try {
+//         const { course_list } = req.body; 
+//         const conflicts = await studentService.validateCourses(course_list);
+//         res.json({ conflicts });
+//     } catch (error) {
+//         res.status(500).json({ message: "Error processing course list", error: error.message });
+//     }
+// };
 
-const fetchPersonalDetails = async (req, res) => {
-	try{
-		const roll_number = req.query.roll_number;
-		// console.log(1,roll_number)
-		const personal = await studentService.fetchPersonalDetails(roll_number);
-		// console.log(personal)
-		res.json(personal);
-	} catch (error) {
-		res.status(500).json({ message: "Error fetching personal details" });
-	}
-}
+// const fetchPersonalDetails = async (req, res) => {
+// 	try{
+// 		const roll_number = req.query.roll_number;
+// 		// console.log(1,roll_number)
+// 		const personal = await studentService.fetchPersonalDetails(roll_number);
+// 		// console.log(personal)
+// 		res.json(personal);
+// 	} catch (error) {
+// 		res.status(500).json({ message: "Error fetching personal details" });
+// 	}
+// }
 
 module.exports = {
 	fetchSemester,
 	fetchAcadYear,
 	fetchResult,
-	pushData,
-	blockResult,
-	unblockResult,
-	checkCourses,
-	fetchPersonalDetails
+	// pushData,
+	// blockResult,
+	// unblockResult,
+	// checkCourses,
+	// fetchPersonalDetails
 };
