@@ -13,7 +13,6 @@ import {
   MenuItem,
   Button,
   Box,
-  SelectChangeEvent,
 } from "@mui/material";
 import { Student, Mark } from "../utils/interfaces"; // Corrected import path
 import {
@@ -30,9 +29,12 @@ import {
 
 const commonInputClass = "rounded w-full md:w-[95%]";
 const commonSelectClass = "rounded-xl w-full md:w-[95%]";
-const commonButtonClass = "px-10 py-4 rounded-xl font-bold transition duration-300 shadow-md transform hover:scale-105";
-const commonContainerClass = "flex flex-col items-center min-h-screen min-w-full p-6 pt-16";
-const commonTableClass = "border border-black text-[11px] p-[6px] flex justify-center";
+const commonButtonClass =
+  "px-10 py-4 rounded-xl font-bold transition duration-300 shadow-md transform hover:scale-105";
+const commonContainerClass =
+  "flex flex-col items-center min-h-screen min-w-full p-6 pt-16";
+const commonTableClass =
+  "border border-black text-[11px] p-[6px] flex justify-center";
 
 const StudentDetails = () => {
   const myRef = useRef<HTMLDivElement>(null);
@@ -61,220 +63,251 @@ const StudentDetails = () => {
     }
 
     return (
-      <div key={result.semesters[0]?.semester} className="w-full">
-        {result.abc && (
-          <div className="font-bold text-sm mt-0">ABC ID : {result.abc}</div>
-        )}
-        <div className="flex flex-col md:flex-row w-full pt-10">
-          <div className="flex w-full md:w-1/4 justify-center">
-            <img
-              src="/dseulogo.png"
-              alt="DSEU-LOGO"
-              className="w-[50%] md:w-[34%] h-auto"
-            />
-          </div>
-          <div className="w-full md:w-3/4">
-            <div className="text-center flex flex-col mx-auto p-1 text-[#0072B9]">
-              <div className="text-dseublue text-xl font-extrabold font-mono">
-                दिल्ली कौशल एवं उद्यमिता विश्वविद्यालय
+      <>
+        <div key={result.semesters[0]?.semester} className="w-full">
+          {result.abc && (
+            <div className="font-bold text-sm mt-0">ABC ID : {result.abc}</div>
+          )}
+          <div className="flex flex-col md:flex-row w-full pt-10">
+            <div className="flex w-full md:w-1/4 justify-center">
+              <img
+                src="/dseulogo.png"
+                alt="DSEU-LOGO"
+                className="w-[50%] md:w-[34%] h-auto"
+              />
+            </div>
+            <div className="w-full md:w-3/4">
+              <div className="text-center flex flex-col mx-auto p-1 text-[#0072B9]">
+                <div className="text-dseublue text-xl font-extrabold font-mono">
+                  दिल्ली कौशल एवं उद्यमिता विश्वविद्यालय
+                </div>
+                <div className="text-dseublue text-3xl font-extrabold font-serif">
+                  Delhi Skill & Entrepreneurship University
+                </div>
+                <div className="text-dseublue text-md font-extrabold font-serif">
+                  (A State University Established under Govt. of NCT of Delhi
+                  Act 04 of 2020)
+                </div>
               </div>
-              <div className="text-dseublue text-3xl font-extrabold font-serif">
-                Delhi Skill & Entrepreneurship University
-              </div>
-              <div className="text-dseublue text-md font-extrabold font-serif">
-                (A State University Established under Govt. of NCT of Delhi Act
-                04 of 2020)
+              <div className="text-center flex flex-col mx-auto">
+                <div className="text-lg font-serif p-1">
+                  Grade sheet of EoSE of{" "}
+                  <span className="font-bold font-sans">June-2024</span>
+                </div>
+                <div className="text-base font-bold font-serif mb-4">
+                  {result.prog}-Batch{" "}
+                  <span className="font-sans">{result.batch}</span>
+                </div>
               </div>
             </div>
-            <div className="text-center flex flex-col mx-auto">
-              <div className="text-lg font-serif p-1">
-                Grade sheet of EoSE of{" "}
-                <span className="font-bold font-sans">June-2024</span>
-              </div>
-              <div className="text-base font-bold font-serif mb-4">
-                {result.prog}-Batch{" "}
-                <span className="font-sans">{result.batch}</span>
-              </div>
-            </div>
           </div>
-        </div>
 
-        <div className="border-[1px] px-3 mx-1 pt-4">
-          <div className="student-info mb-4 flex justify-center">
-            <div className="w-full md:w-[80%]">
-              <div className="flex flex-col md:flex-row justify-between">
-                <div className="flex-col">
-                  <div className="p-0">
-                    Student Name:{" "}
-                    <span className="font-bold uppercase">{result.name}</span>
+          <div className="border-[1px] px-3 mx-1 pt-4">
+            <div className="student-info mb-4 flex justify-center">
+              <div className="w-full md:w-[80%]">
+                <div className="flex flex-col md:flex-row justify-between">
+                  <div className="flex-col">
+                    <div className="p-0">
+                      Student Name:{" "}
+                      <span className="font-bold uppercase">{result.name}</span>
+                    </div>
+                    <div className="p-0">
+                      Roll No.:{" "}
+                      <span className="font-bold">{result.roll_no}</span>
+                    </div>
                   </div>
-                  <div className="p-0">
-                    Roll No.:{" "}
-                    <span className="font-bold">{result.roll_no}</span>
+                  <div className="flex-col">
+                    {result.father || result.mother ? (
+                      <>
+                        {result.father && (
+                          <div className="p-0">
+                            Father's Name:{" "}
+                            <span className="font-bold uppercase">
+                              {result.father}
+                            </span>
+                          </div>
+                        )}
+                        {result.mother && (
+                          <div className="p-0">
+                            Mother's Name:{" "}
+                            <span className="font-bold uppercase">
+                              {result.mother}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      result.guardian && (
+                        <div className="p-0">
+                          Guardian's Name:{" "}
+                          <span className="font-bold">{result.guardian}</span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
-                <div className="flex-col">
-                  {result.father || result.mother ? (
-                    <>
-                      {result.father && (
-                        <div className="p-0">
-                          Father's Name:{" "}
-                          <span className="font-bold uppercase">
-                            {result.father}
-                          </span>
-                        </div>
-                      )}
-                      {result.mother && (
-                        <div className="p-0">
-                          Mother's Name:{" "}
-                          <span className="font-bold uppercase">
-                            {result.mother}
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    result.guardian && (
-                      <div className="p-0">
-                        Guardian's Name:{" "}
-                        <span className="font-bold">{result.guardian}</span>
-                      </div>
+              </div>
+            </div>
+
+            <div className="result-table mb-4 w-full flex justify-center">
+              <table className="w-full md:w-[90%] border border-black border-collapse">
+                {/* Header */}
+                <thead>
+                  <tr>
+                    <th className={`${commonTableClass} w-[10%] font-bold`}>
+                      S.No
+                    </th>
+                    <th className={`${commonTableClass} w-[15%] font-bold`}>
+                      Course Code
+                    </th>
+                    <th className={`${commonTableClass} w-[35%] font-bold`}>
+                      Course Name
+                    </th>
+                    <th className={`${commonTableClass} w-[10%] font-bold`}>
+                      Credit
+                    </th>
+                    <th className={`${commonTableClass} w-[10%] font-bold`}>
+                      Credit Earned
+                    </th>
+                    <th className={`${commonTableClass} w-[10%] font-bold`}>
+                      Grade
+                    </th>
+                    <th className={`${commonTableClass} w-[10%] font-bold`}>
+                      Grade Point
+                    </th>
+                  </tr>
+                </thead>
+
+                {/* Body */}
+                <tbody>
+                  {result.semesters[0].courses.map(
+                    (mark: Mark, index: number) => (
+                      <tr key={index}>
+                        <td
+                          className={`${commonTableClass} w-[10%] text-[10px]`}
+                        >
+                          {index + 1}
+                        </td>
+                        <td
+                          className={`${commonTableClass} w-[15%] text-[10px]`}
+                        >
+                          {mark.course_code}
+                        </td>
+                        <td
+                          className={`${commonTableClass} w-[35%] text-[10px]`}
+                        >
+                          {mark.course_name}
+                        </td>
+                        <td
+                          className={`${commonTableClass} w-[10%] text-[10px]`}
+                        >
+                          {mark.credit}
+                        </td>
+                        <td
+                          className={`${commonTableClass} w-[10%] text-[10px]`}
+                        >
+                          {eval_gp(mark?.marks) >= 4
+                            ? mark.credit
+                            : eval_gp(mark?.marks) == -1
+                            ? "-"
+                            : 0}
+                        </td>
+                        <td
+                          className={`${commonTableClass} w-[10%] text-[10px]`}
+                        >
+                          {eval_grade(mark?.marks, mark?.credit)}
+                        </td>
+                        <td
+                          className={`${commonTableClass} w-[10%] text-[10px]`}
+                        >
+                          {mark.credit != 0 ? eval_gp(mark?.marks) : "-"}
+                        </td>
+                      </tr>
                     )
                   )}
-                </div>
-              </div>
+                </tbody>
+              </table>
             </div>
-          </div>
 
-          <div className="result-table mb-4 w-full flex justify-center">
-            <div className="w-full md:w-[90%] border border-black border-collapse">
-              {/* Header */}
-              <div className="flex">
-                <div className={`${commonTableClass} w-[10%] font-bold`}>
-                  S.No
-                </div>
-                <div className={`${commonTableClass} w-[15%] font-bold`}>
-                  Course Code
-                </div>
-                <div className={`${commonTableClass} w-[35%] font-bold`}>
-                  Course Name
-                </div>
-                <div className={`${commonTableClass} w-[10%] font-bold`}>
-                  Credit
-                </div>
-                <div className={`${commonTableClass} w-[10%] font-bold`}>
-                  Credit Earned
-                </div>
-                <div className={`${commonTableClass} w-[10%] font-bold`}>
-                  Grade
-                </div>
-                <div className={`${commonTableClass} w-[10%] font-bold`}>
-                  Grade Point
-                </div>
-              </div>
-
-              {/* Body */}
-              {result.semesters[0].courses.map((mark: Mark, index: number) => (
-                <div className="flex" key={index}>
-                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
-                    {index + 1}
+            <div className="summary-table w-full flex justify-center">
+              <div className="flex flex-col w-full md:w-[90%] border border-black border-collapse">
+                <div className="flex flex-col md:flex-row">
+                  <div
+                    className={`${commonTableClass} w-full md:w-[14.28%] text-[11px] p-2 flex justify-center items-center`}
+                  >
+                    Credits earned in this semester
                   </div>
-                  <div className={`${commonTableClass} w-[15%] text-[10px]`}>
-                    {mark.course_code}
+                  <div
+                    className={`${commonTableClass} w-full md:w-[14.28%] text-[11px] p-2 flex justify-center items-center`}
+                  >
+                    Total credits as on date
                   </div>
-                  <div className={`${commonTableClass} w-[35%] text-[10px]`}>
-                    {mark.course_name}
-                  </div>
-                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
-                    {mark.credit}
-                  </div>
-                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
-                    {eval_gp(mark?.marks) >= 4
-                      ? mark.credit
-                      : eval_gp(mark?.marks) == -1
-                      ? "-"
-                      : 0}
-                  </div>
-                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
-                    {eval_grade(mark?.marks, mark?.credit)}
-                  </div>
-                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
-                    {mark.credit != 0 ? eval_gp(mark?.marks) : "-"}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="summary-table w-full flex justify-center">
-            <div className="flex flex-col w-full md:w-[90%] border border-black border-collapse">
-              <div className="flex flex-col md:flex-row">
-                <div className={`${commonTableClass} w-full md:w-[14.28%] text-[11px] p-2 flex justify-center items-center`}>
-                  Credits earned in this semester
-                </div>
-                <div className={`${commonTableClass} w-full md:w-[14.28%] text-[11px] p-2 flex justify-center items-center`}>
-                  Total credits as on date
-                </div>
-                <div className="border border-black w-full md:w-[28.56%] flex flex-col">
-                  <div className="text-[11px] p-2 flex justify-center items-center">
-                    SGPA
-                  </div>
-                  <div className="flex justify-evenly">
-                    <div className="border border-t-black border-r-black w-[50%] text-[11px] p-2 flex justify-center items-center">
-                      Earned
+                  <div className="border border-black w-full md:w-[28.56%] flex flex-col">
+                    <div className="text-[11px] p-2 flex justify-center items-center">
+                      SGPA
                     </div>
-                    <div className="border border-t-black border-l-black w-[50%] text-[11px] p-2 flex justify-center items-center">
-                      Grade letter
+                    <div className="flex justify-evenly">
+                      <div className="border border-t-black border-r-black w-[50%] text-[11px] p-2 flex justify-center items-center">
+                        Earned
+                      </div>
+                      <div className="border border-t-black border-l-black w-[50%] text-[11px] p-2 flex justify-center items-center">
+                        Grade letter
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="border border-black w-full md:w-[28.56%] flex flex-col">
-                  <div className="text-[11px] p-2 flex justify-center items-center">
-                    CGPA
-                  </div>
-                  <div className="flex justify-evenly">
-                    <div className="border border-t-black border-r-black flex-1 text-[11px] p-2 flex justify-center items-center">
-                      Earned
+                  <div className="border border-black w-full md:w-[28.56%] flex flex-col">
+                    <div className="text-[11px] p-2 flex justify-center items-center">
+                      CGPA
                     </div>
-                    <div className="border border-t-black border-l-black flex-1 text-[11px] p-2 flex justify-center items-center">
-                      Grade letter
+                    <div className="flex justify-evenly">
+                      <div className="border border-t-black border-r-black flex-1 text-[11px] p-2 flex justify-center items-center">
+                        Earned
+                      </div>
+                      <div className="border border-t-black border-l-black flex-1 text-[11px] p-2 flex justify-center items-center">
+                        Grade letter
+                      </div>
                     </div>
                   </div>
+                  <div className="border border-black flex-1 text-[11px] p-2 flex justify-center items-center">
+                    Grading System
+                  </div>
                 </div>
-                <div className="border border-black flex-1 text-[11px] p-2 flex justify-center items-center">
-                  Grading System
-                </div>
-              </div>
 
-              <div className="flex flex-col md:flex-row">
-                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
-                  {result ? tot_sem_cred(result.semesters[0].courses) : "-"}
-                </div>
-                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
-                  -
-                </div>
-                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
-                  {result ? sgpa_calc(result.semesters[0].courses) : "-"}
-                </div>
-                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
-                  {result
-                    ? sem_grade(sgpa_calc(result.semesters[0].courses))
-                    : "-"}
-                </div>
-                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
-                  -
-                </div>
-                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
-                  -
-                </div>
-                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
-                  ABS
+                <div className="flex flex-col md:flex-row">
+                  <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
+                    {result ? tot_sem_cred(result.semesters[0].courses) : "-"}
+                  </div>
+                  <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
+                    -
+                  </div>
+                  <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
+                    {result ? sgpa_calc(result.semesters[0].courses) : "-"}
+                  </div>
+                  <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
+                    {result
+                      ? sem_grade(sgpa_calc(result.semesters[0].courses))
+                      : "-"}
+                  </div>
+                  <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
+                    -
+                  </div>
+                  <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
+                    -
+                  </div>
+                  <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
+                    ABS
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        <div className="page-break"></div>
+        <div
+          className="w-full h-screen bg-cover bg-center"
+          style={{ backgroundImage: `url('/moi.jpg')` }}
+        ></div>
+      </>
     );
   };
 
@@ -335,10 +368,21 @@ const StudentDetails = () => {
               label="ROLL NUMBER ..."
               type="text"
               value={rollNumber}
-              onChange={(e) => handleRollChange(e, setRollNumber, setAcademicYear, setSemester, setSemesters, setAcademicYears)}
+              onChange={(e) =>
+                handleRollChange(
+                  e,
+                  setRollNumber,
+                  setAcademicYear,
+                  setSemester,
+                  setSemesters,
+                  setAcademicYears
+                )
+              }
               fullWidth
               margin="normal"
-              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} ${commonInputClass}`}
+              className={`${
+                darkMode ? "bg-gray-300" : "bg-gray-50"
+              } ${commonInputClass}`}
               InputProps={{
                 sx: {
                   "& input": {
@@ -355,11 +399,18 @@ const StudentDetails = () => {
               label="AADHAR NUMBER"
               type="text"
               value={aadhar !== null ? aadhar : ""}
-              onChange={(e) => handleAadharChange(e as React.ChangeEvent<HTMLInputElement>, setAadhar)}
+              onChange={(e) =>
+                handleAadharChange(
+                  e as React.ChangeEvent<HTMLInputElement>,
+                  setAadhar
+                )
+              }
               fullWidth
               margin="normal"
               inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} ${commonInputClass}`}
+              className={`${
+                darkMode ? "bg-gray-300" : "bg-gray-50"
+              } ${commonInputClass}`}
               InputProps={{
                 sx: {
                   "& input": {
@@ -375,14 +426,25 @@ const StudentDetails = () => {
             <FormControl
               fullWidth
               margin="normal"
-              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} ${commonSelectClass}`}
+              className={`${
+                darkMode ? "bg-gray-300" : "bg-gray-50"
+              } ${commonSelectClass}`}
             >
               <InputLabel id="academic-year-label">ACADEMIC YEAR</InputLabel>
               <Select
                 labelId="academic-year-label"
                 value={academicYear}
                 label="Academic Year"
-                onChange={(e, child) => handleAcademicYearChange(e, child, rollNumber, setAcademicYear, setSemesters, setSemester)}
+                onChange={(e, child) =>
+                  handleAcademicYearChange(
+                    e,
+                    child,
+                    rollNumber,
+                    setAcademicYear,
+                    setSemesters,
+                    setSemester
+                  )
+                }
                 className={`${darkMode ? "bg-gray-300" : "bg-gray-50"}`}
                 sx={{
                   "& .MuiSelect-select": {
@@ -432,7 +494,21 @@ const StudentDetails = () => {
             {/* Submit Button */}
             <Button
               variant="contained"
-              onClick={() => handleSubmit(semester, rollNumber, academicYear, aadhar, setResult, setAcademicYear, setAadhar, setSemester, setValid, myRef, result)}
+              onClick={() =>
+                handleSubmit(
+                  semester,
+                  rollNumber,
+                  academicYear,
+                  aadhar,
+                  setResult,
+                  setAcademicYear,
+                  setAadhar,
+                  setSemester,
+                  setValid,
+                  myRef,
+                  result
+                )
+              }
               className={`${commonButtonClass} ${
                 darkMode
                   ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
