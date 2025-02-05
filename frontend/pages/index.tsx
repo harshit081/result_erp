@@ -15,117 +15,24 @@ import {
   Box,
   SelectChangeEvent,
 } from "@mui/material";
-// import Navbar from '@/components/Navbar';
-// require('dotenv').config();
+import { Student, Mark } from "../utils/interfaces"; // Corrected import path
+import {
+  eval_grade,
+  eval_gp,
+  tot_sem_cred,
+  sgpa_calc,
+  sem_grade,
+  handleAadharChange,
+  handleRollChange,
+  handleAcademicYearChange,
+  handleSubmit,
+} from "../utils/functions"; // Corrected import path
 
-interface Mark {
-  course_code: string;
-  course_name: string;
-  credit: number;
-  marks: string;
-  month_year: string;
-  full_mark: number;
-  grade_point: number;
-  grade: string;
-}
-
-interface SemesterResult {
-  semester: number;
-  courses: Mark[];
-  sgpa: number;
-  sem_grade: string;
-  academic_year: string;
-}
-
-interface Student {
-  roll_no: string;
-  name: string;
-  prog: string;
-  campus: string;
-  batch: number | null;
-  mother?: string;
-  father?: string;
-  guardian?: string;
-  semesters: SemesterResult[];
-  abc?: string;
-}
-
-function eval_grade(mark: string, credit: number) {
-  if (!isNaN(parseFloat(mark)) && typeof parseFloat(mark) == "number") {
-    // console.log("1",mark)
-    const marks = parseFloat(mark);
-    if (credit != 0) {
-      console.log("credit", credit);
-      if (marks >= 90) return "O";
-      else if (marks >= 80) return "A+";
-      else if (marks >= 70) return "A";
-      else if (marks >= 60) return "B+";
-      else if (marks >= 50) return "B";
-      else if (marks >= 45) return "C";
-      else if (marks >= 40) return "P";
-      else return "F";
-    } else {
-      if (marks >= 40) {
-        return "S";
-      } else {
-        return "N";
-      }
-    }
-  } else {
-    return mark;
-  }
-}
-
-function eval_gp(mark: string) {
-  if (typeof parseFloat(mark) == "number") {
-    const marks = parseFloat(mark);
-    if (marks >= 90) return 10;
-    else if (marks >= 80) return 9;
-    else if (marks >= 70) return 8;
-    else if (marks >= 60) return 7;
-    else if (marks >= 50) return 6;
-    else if (marks >= 45) return 5;
-    else if (marks >= 40) return 4;
-    else return 0;
-  } else return -1;
-}
-function tot_sem_cred(courses: Mark[]) {
-  let total_credit = 0;
-  courses.forEach((course) => {
-    if (eval_gp(course.marks)) {
-      total_credit += parseFloat(course.credit.toString());
-    }
-  });
-  return total_credit;
-}
-
-function sgpa_calc(courses: Mark[]) {
-  let total_credit = 0;
-  let ci_pi = 0;
-  courses.forEach((course) => {
-    total_credit +=
-      eval_gp(course.marks) == 0 || eval_gp(course.marks) == -1
-        ? 0
-        : parseFloat(course.credit.toString());
-    ci_pi +=
-      parseFloat(course.credit.toString()) *
-      (eval_gp(course.marks) == 0 || eval_gp(course.marks) == -1
-        ? 0
-        : eval_gp(course.marks));
-  });
-  return total_credit > 0 ? parseFloat((ci_pi / total_credit).toFixed(2)) : 0;
-}
-
-function sem_grade(sgpa: number) {
-  if (sgpa >= 9.5) return "O";
-  else if (sgpa >= 8.5) return "A+";
-  else if (sgpa >= 7.5) return "A";
-  else if (sgpa >= 6.5) return "B+";
-  else if (sgpa >= 5.5) return "B";
-  else if (sgpa >= 4.5) return "C";
-  else if (sgpa >= 4) return "P";
-  else return "F";
-}
+const commonInputClass = "rounded w-full md:w-[95%]";
+const commonSelectClass = "rounded-xl w-full md:w-[95%]";
+const commonButtonClass = "px-10 py-4 rounded-xl font-bold transition duration-300 shadow-md transform hover:scale-105";
+const commonContainerClass = "flex flex-col items-center min-h-screen min-w-full p-6 pt-16";
+const commonTableClass = "border border-black text-[11px] p-[6px] flex justify-center";
 
 const StudentDetails = () => {
   const myRef = useRef<HTMLDivElement>(null);
@@ -144,133 +51,29 @@ const StudentDetails = () => {
 
   const [aadhar, setAadhar] = useState<number | null>(null);
 
-  const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-
-    if (/^\d{0,12}$/.test(inputValue)) {
-      setAadhar(inputValue === "" ? null : Number(inputValue)); // Set as number if valid, or reset to null if empty
-    }
-  };
-
   const handleSwitchChange = () => {
     setDarkMode(!darkMode);
   };
 
-  const handleRollChange = async (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const roll = e.target.value.toUpperCase();
-    setRollNumber(roll);
-
-    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchacadyear?roll_number=${roll}`;
-    // console.log(url);
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json(); // Await response.json() to parse the data
-      console.log("acad_year data:", data);
-      setAcademicYear("");
-      setSemester("");
-      setSemesters(["Semester"]);
-      setAcademicYears(data); // Log the fetched data
-    } catch (error) {
-      console.error("Error fetching semester data:", error);
-    }
-  };
-
-  const handleAcademicYearChange = async (
-    e: SelectChangeEvent<string>,
-    child: ReactNode
-  ) => {
-    const acad_year = e.target.value as string;
-    setAcademicYear(acad_year);
-    // console.log("heheheh",acad_year)
-    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/fetchsemester?roll_number=${rollNumber}&acad_year=${acad_year}`;
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json(); // Await response.json() to parse the data
-      // console.log('Semester data:', data);
-      if (data == "") {
-        setSemesters(["0"]);
-      } else {
-        setSemesters(data); // Log the fetched data
-      }
-      setSemester("");
-    } catch (error) {
-      console.error("Error fetching semester data:", error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    setValid(true);
-    if (semester == "0") {
-      return;
-    }
-    if (!rollNumber || !semester || !academicYear || !aadhar) {
-      console.error("Please fill in all fields");
-      return;
-    }
-    const url = `${process.env.NEXT_PUBLIC_PSQL_URL}/studentresult?roll_number=${rollNumber}&semester=${semester}&acad_year=${academicYear}`;
-    // console.log(url)
-    const headers = new Headers();
-    headers.append("aadhar", `${aadhar}`);
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: headers,
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-
-      setResult(data);
-    } catch (error) {
-      setResult(undefined);
-      setAcademicYear("");
-      setAadhar(null);
-      setSemester("");
-      setValid(false);
-      console.error("Error fetching result data:", error);
-    }
-    if (result) {
-      myRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  };
-
   const renderStudentResults = () => {
+    if (!result || !result.semesters || result.semesters.length === 0) {
+      return <div>No results available.</div>;
+    }
+
     return (
-      <div key={result?.semesters[0]?.semester} className="">
-        {result?.abc && (
-          <div className="font-bold text-sm mt-0">ABC ID : {result?.abc}</div>
+      <div key={result.semesters[0]?.semester} className="w-full">
+        {result.abc && (
+          <div className="font-bold text-sm mt-0">ABC ID : {result.abc}</div>
         )}
-        <div className="flex w-full pt-10">
-          <div className="flex w-1/4 justify-center ">
+        <div className="flex flex-col md:flex-row w-full pt-10">
+          <div className="flex w-full md:w-1/4 justify-center">
             <img
               src="/dseulogo.png"
               alt="DSEU-LOGO"
-              className="w-[34%] h-[69%] "
+              className="w-[50%] md:w-[34%] h-auto"
             />
           </div>
-          <div>
+          <div className="w-full md:w-3/4">
             <div className="text-center flex flex-col mx-auto p-1 text-[#0072B9]">
               <div className="text-dseublue text-xl font-extrabold font-mono">
                 दिल्ली कौशल एवं उद्यमिता विश्वविद्यालय
@@ -289,8 +92,8 @@ const StudentDetails = () => {
                 <span className="font-bold font-sans">June-2024</span>
               </div>
               <div className="text-base font-bold font-serif mb-4">
-                {result?.prog}-Batch{" "}
-                <span className="font-sans">{result?.batch}</span>
+                {result.prog}-Batch{" "}
+                <span className="font-sans">{result.batch}</span>
               </div>
             </div>
           </div>
@@ -298,43 +101,43 @@ const StudentDetails = () => {
 
         <div className="border-[1px] px-3 mx-1 pt-4">
           <div className="student-info mb-4 flex justify-center">
-            <div className="w-[80%]">
-              <div className="flex justify-between">
+            <div className="w-full md:w-[80%]">
+              <div className="flex flex-col md:flex-row justify-between">
                 <div className="flex-col">
                   <div className="p-0">
                     Student Name:{" "}
-                    <span className="font-bold uppercase">{result?.name}</span>
+                    <span className="font-bold uppercase">{result.name}</span>
                   </div>
                   <div className="p-0">
                     Roll No.:{" "}
-                    <span className="font-bold">{result?.roll_no}</span>
+                    <span className="font-bold">{result.roll_no}</span>
                   </div>
                 </div>
                 <div className="flex-col">
-                  {result?.father || result?.mother ? (
+                  {result.father || result.mother ? (
                     <>
-                      {result?.father && (
+                      {result.father && (
                         <div className="p-0">
                           Father's Name:{" "}
                           <span className="font-bold uppercase">
-                            {result?.father}
+                            {result.father}
                           </span>
                         </div>
                       )}
-                      {result?.mother && (
+                      {result.mother && (
                         <div className="p-0">
                           Mother's Name:{" "}
                           <span className="font-bold uppercase">
-                            {result?.mother}
+                            {result.mother}
                           </span>
                         </div>
                       )}
                     </>
                   ) : (
-                    result?.guardian && (
+                    result.guardian && (
                       <div className="p-0">
                         Guardian's Name:{" "}
-                        <span className="font-bold">{result?.guardian}</span>
+                        <span className="font-bold">{result.guardian}</span>
                       </div>
                     )
                   )}
@@ -344,58 +147,58 @@ const StudentDetails = () => {
           </div>
 
           <div className="result-table mb-4 w-full flex justify-center">
-            <div className="w-[90%] border border-black border-collapse">
+            <div className="w-full md:w-[90%] border border-black border-collapse">
               {/* Header */}
               <div className="flex">
-                <div className="border border-black text-[11px] p-[6px] w-[10%] flex justify-center font-bold">
+                <div className={`${commonTableClass} w-[10%] font-bold`}>
                   S.No
                 </div>
-                <div className="border border-black text-[11px] p-[6px] w-[15%] flex justify-center font-bold">
+                <div className={`${commonTableClass} w-[15%] font-bold`}>
                   Course Code
                 </div>
-                <div className="border border-black text-[11px] p-[6px] w-[35%] flex justify-center font-bold">
+                <div className={`${commonTableClass} w-[35%] font-bold`}>
                   Course Name
                 </div>
-                <div className="border border-black text-[11px] p-[6px] w-[10%] flex justify-center font-bold">
+                <div className={`${commonTableClass} w-[10%] font-bold`}>
                   Credit
                 </div>
-                <div className="border border-black text-[11px] p-[6px] w-[10%] flex justify-center font-bold">
+                <div className={`${commonTableClass} w-[10%] font-bold`}>
                   Credit Earned
                 </div>
-                <div className="border border-black text-[11px] p-[6px] w-[10%] flex justify-center font-bold">
+                <div className={`${commonTableClass} w-[10%] font-bold`}>
                   Grade
                 </div>
-                <div className="border border-black text-[11px] p-[6px] w-[10%] flex justify-center font-bold">
+                <div className={`${commonTableClass} w-[10%] font-bold`}>
                   Grade Point
                 </div>
               </div>
 
               {/* Body */}
-              {result?.semesters[0]?.courses.map((mark, index) => (
+              {result.semesters[0].courses.map((mark: Mark, index: number) => (
                 <div className="flex" key={index}>
-                  <div className="border border-black text-[10px] p-[6px] w-[10%] flex justify-center">
+                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
                     {index + 1}
                   </div>
-                  <div className="border border-black text-[10px] p-[6px] w-[15%]">
+                  <div className={`${commonTableClass} w-[15%] text-[10px]`}>
                     {mark.course_code}
                   </div>
-                  <div className="border border-black text-[10px] p-[6px] w-[35%]">
+                  <div className={`${commonTableClass} w-[35%] text-[10px]`}>
                     {mark.course_name}
                   </div>
-                  <div className="border border-black text-[10px] p-[6px] w-[10%] flex justify-center">
+                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
                     {mark.credit}
                   </div>
-                  <div className="border border-black text-[10px] p-[6px] w-[10%] flex justify-center">
+                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
                     {eval_gp(mark?.marks) >= 4
                       ? mark.credit
                       : eval_gp(mark?.marks) == -1
                       ? "-"
                       : 0}
                   </div>
-                  <div className="border border-black text-[10px] p-[6px] w-[10%] flex justify-center">
+                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
                     {eval_grade(mark?.marks, mark?.credit)}
                   </div>
-                  <div className="border border-black text-[10px] p-[6px] w-[10%] flex justify-center">
+                  <div className={`${commonTableClass} w-[10%] text-[10px]`}>
                     {mark.credit != 0 ? eval_gp(mark?.marks) : "-"}
                   </div>
                 </div>
@@ -404,15 +207,15 @@ const StudentDetails = () => {
           </div>
 
           <div className="summary-table w-full flex justify-center">
-            <div className="flex flex-col w-[90%] border border-black border-collapse">
-              <div className="flex">
-                <div className="border border-black w-[14.28%] text-[11px] p-2 flex justify-center items-center">
+            <div className="flex flex-col w-full md:w-[90%] border border-black border-collapse">
+              <div className="flex flex-col md:flex-row">
+                <div className={`${commonTableClass} w-full md:w-[14.28%] text-[11px] p-2 flex justify-center items-center`}>
                   Credits earned in this semester
                 </div>
-                <div className="border border-black w-[14.28%] text-[11px] p-2 flex justify-center items-center">
+                <div className={`${commonTableClass} w-full md:w-[14.28%] text-[11px] p-2 flex justify-center items-center`}>
                   Total credits as on date
                 </div>
-                <div className="border border-black w-[28.56%] flex flex-col">
+                <div className="border border-black w-full md:w-[28.56%] flex flex-col">
                   <div className="text-[11px] p-2 flex justify-center items-center">
                     SGPA
                   </div>
@@ -425,7 +228,7 @@ const StudentDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="border border-black w-[28.56%] flex flex-col">
+                <div className="border border-black w-full md:w-[28.56%] flex flex-col">
                   <div className="text-[11px] p-2 flex justify-center items-center">
                     CGPA
                   </div>
@@ -443,28 +246,28 @@ const StudentDetails = () => {
                 </div>
               </div>
 
-              <div className="flex">
-                <div className="border border-black flex-1 text-[10px] p-2 flex justify-center">
+              <div className="flex flex-col md:flex-row">
+                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
                   {result ? tot_sem_cred(result.semesters[0].courses) : "-"}
                 </div>
-                <div className="border border-black flex-1 text-[10px] p-2 flex justify-center">
+                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
                   -
                 </div>
-                <div className="border border-black flex-1 text-[10px] p-2 flex justify-center">
+                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
                   {result ? sgpa_calc(result.semesters[0].courses) : "-"}
                 </div>
-                <div className="border border-black flex-1 text-[10px] p-2 flex justify-center">
+                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
                   {result
                     ? sem_grade(sgpa_calc(result.semesters[0].courses))
                     : "-"}
                 </div>
-                <div className="border border-y-black border-x-black flex-1 text-[10px] p-2 flex justify-center">
+                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
                   -
                 </div>
-                <div className="border border-y-black border-x-black flex-1 text-[10px] p-2 flex justify-center">
+                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
                   -
                 </div>
-                <div className="border border-y-black border-x-black flex-1 text-[10px] p-2 flex justify-center">
+                <div className={`${commonTableClass} flex-1 text-[10px] p-2`}>
                   ABS
                 </div>
               </div>
@@ -489,7 +292,7 @@ const StudentDetails = () => {
           backgroundAttachment: "fixed",
         }}
       >
-        <Container className="flex flex-col items-center min-h-screen min-w-full p-6 pt-16">
+        <Container className={commonContainerClass}>
           {/* Header Section */}
           <div className="flex items-center justify-between w-full mb-6">
             <img
@@ -498,7 +301,7 @@ const StudentDetails = () => {
               className="h-24 w-auto ml-10"
             />
             <div
-              className={`font-[1000] font-serif text-5xl mx-auto ${
+              className={`font-[1000] font-serif text-xl md:text-5xl mx-auto ${
                 darkMode ? "text-gray-100" : "text-gray-800"
               }`}
             >
@@ -532,12 +335,10 @@ const StudentDetails = () => {
               label="ROLL NUMBER ..."
               type="text"
               value={rollNumber}
-              onChange={handleRollChange}
+              onChange={(e) => handleRollChange(e, setRollNumber, setAcademicYear, setSemester, setSemesters, setAcademicYears)}
               fullWidth
               margin="normal"
-              className={`${
-                darkMode ? "bg-gray-300" : "bg-gray-50"
-              } rounded w-[95%]`}
+              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} ${commonInputClass}`}
               InputProps={{
                 sx: {
                   "& input": {
@@ -554,13 +355,11 @@ const StudentDetails = () => {
               label="AADHAR NUMBER"
               type="text"
               value={aadhar !== null ? aadhar : ""}
-              onChange={handleAadharChange}
+              onChange={(e) => handleAadharChange(e as React.ChangeEvent<HTMLInputElement>, setAadhar)}
               fullWidth
               margin="normal"
               inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-              className={`${
-                darkMode ? "bg-gray-300" : "bg-gray-50"
-              } rounded w-[95%]`}
+              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} ${commonInputClass}`}
               InputProps={{
                 sx: {
                   "& input": {
@@ -576,16 +375,14 @@ const StudentDetails = () => {
             <FormControl
               fullWidth
               margin="normal"
-              className={`${
-                darkMode ? "bg-gray-300" : "bg-gray-50"
-              } rounded-xl w-[95%]`}
+              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} ${commonSelectClass}`}
             >
               <InputLabel id="academic-year-label">ACADEMIC YEAR</InputLabel>
               <Select
                 labelId="academic-year-label"
                 value={academicYear}
                 label="Academic Year"
-                onChange={handleAcademicYearChange}
+                onChange={(e, child) => handleAcademicYearChange(e, child, rollNumber, setAcademicYear, setSemesters, setSemester)}
                 className={`${darkMode ? "bg-gray-300" : "bg-gray-50"}`}
                 sx={{
                   "& .MuiSelect-select": {
@@ -607,7 +404,7 @@ const StudentDetails = () => {
             <FormControl
               fullWidth
               margin="normal"
-              className="bg-gray-50 rounded-xl w-[95%]"
+              className="bg-gray-50 rounded-xl w-full md:w-[95%]"
             >
               <InputLabel id="semester-label">SEMESTER</InputLabel>
               <Select
@@ -615,9 +412,7 @@ const StudentDetails = () => {
                 value={semester}
                 label="Semester"
                 onChange={(e) => setSemester(e.target.value)}
-                className={`${
-                  darkMode ? "bg-gray-300" : "bg-gray-50"
-                } `}
+                className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} `}
                 sx={{
                   "& .MuiSelect-select": {
                     padding: "16px",
@@ -637,8 +432,8 @@ const StudentDetails = () => {
             {/* Submit Button */}
             <Button
               variant="contained"
-              onClick={handleSubmit}
-              className={`px-10 py-4 rounded-xl font-bold transition duration-300 shadow-md transform hover:scale-105 ${
+              onClick={() => handleSubmit(semester, rollNumber, academicYear, aadhar, setResult, setAcademicYear, setAadhar, setSemester, setValid, myRef, result)}
+              className={`${commonButtonClass} ${
                 darkMode
                   ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
                   : "bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900"
