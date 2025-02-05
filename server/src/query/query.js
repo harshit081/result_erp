@@ -50,4 +50,5 @@ module.exports = {
 	updateBlockedResult: `UPDATE studentinfo SET blocked_result = $1 WHERE roll_no = $2`,
 
   fetchPersonalDetails:`SELECT * FROM personalinfo WHERE rollno = $1`,
+  fetchCGPA:`SELECT * FROM student_data WHERE roll_no = $1`,
 };

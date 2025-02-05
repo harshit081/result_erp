@@ -198,3 +198,5 @@ export async function handleSubmit(
     myRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }
 }
+export const sumUptoIndex = (arr: number[], n: number) => 
+  arr.slice(0, n + 1).reduce((sum, num) => sum + num, 0);

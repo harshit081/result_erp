@@ -1,0 +1,55 @@
+import pandas as pd
+
+def eval_gp(mark):
+    try:
+        mark = float(mark)
+        if mark >= 90: return 10
+        elif mark >= 80: return 9
+        elif mark >= 70: return 8
+        elif mark >= 60: return 7
+        elif mark >= 55: return 6
+        else: return 0
+    except (ValueError, TypeError):
+        return -1
+
+def process_student_data(file_path):
+    df = pd.read_csv(file_path)
+    
+    results = []
+    for roll_no, student_data in df.groupby('Roll No'):
+        sem_credits = []
+        cipi = []
+        
+        for sem in sorted(student_data['Sem'].unique()):
+            sem_group = student_data[student_data['Sem'] == sem]
+            
+            # Filter marks > 55
+            valid_marks = sem_group[sem_group['Mark Obt'] >= 55]
+            
+            # Calculate semester credits
+            credits = int(valid_marks['Credit'].sum())
+            sem_credits.append(credits)
+            
+            # Calculate CIPI for semester
+            semester_cipi = int(sum(valid_marks['Credit'] * valid_marks['Mark Obt'].apply(eval_gp)))
+            cipi.append(semester_cipi)
+        
+        results.append({
+            'roll_no': roll_no, 
+            'sem_credits': sem_credits, 
+            'cipi': cipi
+        })
+    
+    return pd.DataFrame(results)
+
+# Process both files
+df_2022 = process_student_data("C:/Users/thars/Downloads/phd2022cgpa.csv")
+df_2023 = process_student_data('C:/Users/thars/Downloads/phd2023cgpa.csv')
+
+# Combine results
+combined_df = pd.concat([df_2022, df_2023])
+
+# Save to CSV
+combined_df.to_csv('processed_cgpa.csv', index=False)
+
+print("Processing complete. Results saved to processed_cgpa.csv")

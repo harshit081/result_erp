@@ -29,4 +29,6 @@ export interface Student {
   guardian?: string;
   semesters: SemesterResult[];
   abc?: string;
+  sem_credits: number[];
+  cipi: number[];
 }
