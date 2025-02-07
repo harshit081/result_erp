@@ -1,7 +1,6 @@
 "use client";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import Brightness4 from "@mui/icons-material/Brightness4";
-import { IconButton } from "@mui/material";
+import "@fontsource/poppins/600.css";
+import "@fontsource/inter/400.css";
 import React, { useState, useRef, ReactNode } from "react";
 import ReactToPrint from "react-to-print";
 import {
@@ -25,7 +24,7 @@ import {
   handleRollChange,
   handleAcademicYearChange,
   handleSubmit,
-  sumUptoIndex
+  sumUptoIndex,
 } from "../utils/functions"; // Corrected import path
 
 const commonInputClass = "rounded w-full md:w-[95%]";
@@ -33,13 +32,12 @@ const commonSelectClass = "rounded-xl w-full md:w-[95%]";
 const commonButtonClass =
   "px-10 py-4 rounded-xl font-bold transition duration-300 shadow-md transform hover:scale-105";
 const commonContainerClass =
-  "flex flex-col items-center min-h-screen min-w-full p-6 pt-16";
+  "flex flex-col items-center min-h-screen min-w-full bg-white p-6 pt-16";
 const commonTableClass = "border !border-black text-[11px] p-[2px] ";
 
 const StudentDetails = () => {
   const myRef = useRef<HTMLDivElement>(null);
   const [rollNumber, setRollNumber] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
   const [semesters, setSemesters] = useState(["Semester"]);
   const [semester, setSemester] = useState("");
 
@@ -53,10 +51,6 @@ const StudentDetails = () => {
 
   const [aadhar, setAadhar] = useState<number | null>(null);
 
-  const handleSwitchChange = () => {
-    setDarkMode(!darkMode);
-  };
-
   const renderStudentResults = () => {
     if (!result || !result.semesters || result.semesters.length === 0) {
       return <div>No results available.</div>;
@@ -66,7 +60,9 @@ const StudentDetails = () => {
       <>
         <div key={result.semesters[0]?.semester} className="w-full">
           {result.abc && (
-            <div className="font-bold font-mono text-sm mt-0">ABC ID : {result.abc}</div>
+            <div className="font-bold font-mono text-sm mt-0">
+              ABC ID : {result.abc}
+            </div>
           )}
           <div className="flex w-full pt-1">
             <div className="flex w-1/5 items-center">
@@ -224,8 +220,8 @@ const StudentDetails = () => {
                           {eval_gp(mark?.marks) >= 4
                             ? mark.credit
                             : eval_gp(mark?.marks) == -1
-                              ? "-"
-                              : 0}
+                            ? "-"
+                            : 0}
                         </td>
                         <td
                           className={`${commonTableClass} w-[10%] text-[10px] text-center`}
@@ -244,57 +240,88 @@ const StudentDetails = () => {
               </table>
             </div>
 
-
-<div className="summary-table w-full flex justify-center">
-  <table className="w-[90%] border border-collapse !border-black">
-    {/* Header */}
-    <thead>
-      <tr className="border-b !border-black font-black text-[11px] text-center">
-        <td rowSpan={2} className="border !border-black p-2">Credits Earned in this semester</td>
-        <td rowSpan={2} className="border !border-black p-2">Total Credits earned as on date</td>
-        <td colSpan={2} className="border !border-black p-2">SGPA</td>
-        <td colSpan={2} className="border !border-black p-2">CGPA</td>
-        <td rowSpan={2} className="border !border-black p-2 align-middle">Grading System</td>
-      </tr>
-      <tr className="border-b !border-black font-black text-[11px] text-center">
-        <td className="border !border-black p-2">Earned</td>
-        <td className="border !border-black p-2">Grade Letter</td>
-        <td className="border !border-black p-2">Earned</td>
-        <td className="border !border-black p-2">Grade Letter</td>
-      </tr>
-    </thead>
-    {/* Data */}
-    <tbody>
-      <tr>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">
-          {result ? tot_sem_cred(result.semesters[0].courses) : "-"}
-        </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">
-          {result ? sumUptoIndex(result.sem_credits, parseInt(semester)-1) : "-"}
-        </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">
-          {result ? sgpa_calc(result.semesters[0].courses) : "-"}
-        </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">
-          {result ? sem_grade(sgpa_calc(result.semesters[0].courses)) : "-"}
-        </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">
-                  {
-                    result? (sumUptoIndex(result.cipi, parseInt(semester)-1) / sumUptoIndex(result.sem_credits, parseInt(semester)-1)).toFixed(2) : "-"
-                  }
-        </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black">
-          {
-            result? sem_grade(sumUptoIndex(result.cipi, parseInt(semester)-1) / sumUptoIndex(result.sem_credits, parseInt(semester)-1)) : "-"
-          }
-        </td>
-        <td className="border !border-black text-[10px] p-2 text-center font-black align-middle">ABS</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-
+            <div className="summary-table w-full flex justify-center">
+              <table className="w-[90%] border border-collapse !border-black">
+                {/* Header */}
+                <thead>
+                  <tr className="border-b !border-black font-black text-[11px] text-center">
+                    <td rowSpan={2} className="border !border-black p-2">
+                      Credits Earned in this semester
+                    </td>
+                    <td rowSpan={2} className="border !border-black p-2">
+                      Total Credits earned as on date
+                    </td>
+                    <td colSpan={2} className="border !border-black p-2">
+                      SGPA
+                    </td>
+                    <td colSpan={2} className="border !border-black p-2">
+                      CGPA
+                    </td>
+                    <td
+                      rowSpan={2}
+                      className="border !border-black p-2 align-middle"
+                    >
+                      Grading System
+                    </td>
+                  </tr>
+                  <tr className="border-b !border-black font-black text-[11px] text-center">
+                    <td className="border !border-black p-2">Earned</td>
+                    <td className="border !border-black p-2">Grade Letter</td>
+                    <td className="border !border-black p-2">Earned</td>
+                    <td className="border !border-black p-2">Grade Letter</td>
+                  </tr>
+                </thead>
+                {/* Data */}
+                <tbody>
+                  <tr>
+                    <td className="border !border-black text-[10px] p-2 text-center font-black">
+                      {result ? tot_sem_cred(result.semesters[0].courses) : "-"}
+                    </td>
+                    <td className="border !border-black text-[10px] p-2 text-center font-black">
+                      {result
+                        ? sumUptoIndex(
+                            result.sem_credits,
+                            parseInt(semester) - 1
+                          )
+                        : "-"}
+                    </td>
+                    <td className="border !border-black text-[10px] p-2 text-center font-black">
+                      {result ? sgpa_calc(result.semesters[0].courses) : "-"}
+                    </td>
+                    <td className="border !border-black text-[10px] p-2 text-center font-black">
+                      {result
+                        ? sem_grade(sgpa_calc(result.semesters[0].courses))
+                        : "-"}
+                    </td>
+                    <td className="border !border-black text-[10px] p-2 text-center font-black">
+                      {result
+                        ? (
+                            sumUptoIndex(result.cipi, parseInt(semester) - 1) /
+                            sumUptoIndex(
+                              result.sem_credits,
+                              parseInt(semester) - 1
+                            )
+                          ).toFixed(2)
+                        : "-"}
+                    </td>
+                    <td className="border !border-black text-[10px] p-2 text-center font-black">
+                      {result
+                        ? sem_grade(
+                            sumUptoIndex(result.cipi, parseInt(semester) - 1) /
+                              sumUptoIndex(
+                                result.sem_credits,
+                                parseInt(semester) - 1
+                              )
+                          )
+                        : "-"}
+                    </td>
+                    <td className="border !border-black text-[10px] p-2 text-center font-black align-middle">
+                      ABS
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
             <p className="flex w-full place-content-end items-end">
               Computer Generated Result Grade Sheet
@@ -312,52 +339,26 @@ const StudentDetails = () => {
 
   return (
     <>
-      <div
-        className={`${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900"
-          } transition duration-500`}
-        style={{
-          backgroundImage: `url('/back.svg')`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center center",
-          backgroundAttachment: "fixed",
-        }}
-      >
+      <div>
         <Container className={commonContainerClass}>
-          {/* Header Section */}
-          <div className="flex items-center justify-between w-full mb-6">
-            <img
-              src="/dseulogo.png"
-              alt="DSEU Logo"
-              className="h-24 w-auto ml-10"
-            />
-            <div
-              className={`font-[1000] font-serif text-xl md:text-5xl mx-auto ${darkMode ? "text-gray-100" : "text-gray-800"
-                }`}
-            >
-              R E S U L T
-            </div>
-            <IconButton
-              aria-label="Toggle Dark Mode"
-              onClick={handleSwitchChange}
-              className={`transition duration-300 mr-10 ${darkMode ? "text-gray-100" : "text-gray-900"
-                }`}
-            >
-              {darkMode ? <Brightness7Icon /> : <Brightness4 />}
-            </IconButton>
-          </div>
-
           {/* Form Section */}
           <Box
             component="form"
             noValidate
             autoComplete="off"
-            className={`p-10 bg-white bg-opacity-30 border border-gray-500 rounded-[40px] flex flex-col justify-between items-center gap-8 w-full max-w-[90%] md:max-w-[75%] lg:max-w-[60%] mt-5 ${darkMode ? "bg-gray-800 bg-opacity-30" : "bg-white bg-opacity-30"
-              }`}
+            className="p-10 sm:p-10 bg-opacity-30 shadow-2xl shadow-gray-400 border rounded-[10px] flex flex-col justify-between items-center gap-4 w-full md:w-[500px] h-[800px] mt-5" // Changed width for smaller devices
             style={{
               backdropFilter: "blur(2px)",
             }}
           >
+            <img
+              src="/dseulogo.png"
+              alt="DSEU Logo"
+              className="h-32 w-auto sm:h-44"
+            />
+            <div className="font-[inter] font-semibold text-lg sm:text-xl md:text-4xl mx-auto text-gray-800">
+              Result Portal
+            </div>
             {/* Roll Number Input */}
             <TextField
               label="ROLL NUMBER ..."
@@ -375,14 +376,13 @@ const StudentDetails = () => {
               }
               fullWidth
               margin="normal"
-              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"
-                } ${commonInputClass}`}
+              className={`bg-gray-50 ${commonInputClass}`}
               InputProps={{
                 sx: {
                   "& input": {
                     padding: "16px",
                     borderRadius: "10px",
-                    fontSize: "16px",
+                    fontSize: "14px",
                   },
                 },
               }}
@@ -402,14 +402,13 @@ const StudentDetails = () => {
               fullWidth
               margin="normal"
               inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"
-                } ${commonInputClass}`}
+              className={`bg-gray-50 ${commonInputClass}`}
               InputProps={{
                 sx: {
                   "& input": {
-                    padding: "16px",
+                    padding: "16px", // Adjusted padding for smaller devices
                     borderRadius: "10px",
-                    fontSize: "16px",
+                    fontSize: "14px", // Adjusted font size for smaller devices
                   },
                 },
               }}
@@ -419,8 +418,7 @@ const StudentDetails = () => {
             <FormControl
               fullWidth
               margin="normal"
-              className={`${darkMode ? "bg-gray-300" : "bg-gray-50"
-                } ${commonSelectClass}`}
+              className={`bg-gray-50 ${commonSelectClass}`}
             >
               <InputLabel id="academic-year-label">ACADEMIC YEAR</InputLabel>
               <Select
@@ -437,12 +435,12 @@ const StudentDetails = () => {
                     setSemester
                   )
                 }
-                className={`${darkMode ? "bg-gray-300" : "bg-gray-50"}`}
+                className="bg-gray-50"
                 sx={{
                   "& .MuiSelect-select": {
                     padding: "16px",
                     borderRadius: "10px",
-                    fontSize: "16px",
+                    fontSize: "14px",
                   },
                 }}
               >
@@ -466,12 +464,12 @@ const StudentDetails = () => {
                 value={semester}
                 label="Semester"
                 onChange={(e) => setSemester(e.target.value)}
-                className={`${darkMode ? "bg-gray-300" : "bg-gray-50"} `}
+                className="bg-gray-50"
                 sx={{
                   "& .MuiSelect-select": {
-                    padding: "16px",
+                    padding: "16px", // Adjusted padding for smaller devices
                     borderRadius: "10px",
-                    fontSize: "16px",
+                    fontSize: "14px", // Adjusted font size for smaller devices
                   },
                 }}
               >
@@ -501,10 +499,7 @@ const StudentDetails = () => {
                   result
                 )
               }
-              className={`${commonButtonClass} ${darkMode
-                  ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
-                  : "bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900"
-                } text-white`}
+              className={`w-[90%] sm:w-[95%] h-[8%] rounded-2xl bg-gradient-to-r from-gray-900 to-black hover:from-gray-700 hover:to-gray-800 text-white`} // Adjusted width for smaller devices
             >
               Submit
             </Button>
@@ -524,25 +519,23 @@ const StudentDetails = () => {
                 />
                 <div
                   ref={componentRef}
-                  className={`w-full h-full rounded-xl shadow-lg mt-1 p-8 ${darkMode
-                      ? "bg-white text-gray-900"
-                      : "bg-white text-gray-900"
-                    }`}
+                  className="w-full h-full rounded-xl shadow-lg mt-1 p-8 bg-white text-gray-900"
                 >
-                  {renderStudentResults()}
+                  {/* {renderStudentResults()} */}
                 </div>
               </div>
             </>
           ) : (
             <div
-              className={`mt-10 font-semibold text-lg ${valid ? "text-gray-500" : "text-red-900"
-                }`}
+              className={`mt-10 font-semibold text-lg ${
+                valid ? "text-gray-500" : "text-red-900"
+              }`}
             >
               {!valid
                 ? "Credentials Mismatch"
                 : semesters[0] === "0"
-                  ? "Result Not Available Kindly Contact Campus Director"
-                  : "Nothing to show"}
+                ? "Result Not Available Kindly Contact Campus Director"
+                : "Nothing to show"}
             </div>
           )}
         </Container>
