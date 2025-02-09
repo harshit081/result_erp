@@ -1,6 +1,6 @@
 CREATE DATABASE dseuerp;
 
-CREATE TABLE studentinfo(
+CREATE TABLE studentinfo2(
     roll_no VARCHAR(15) PRIMARY KEY, 
     name VARCHAR(50),
     prog VARCHAR(80),

@@ -547,7 +547,7 @@ const StudentDetails = () => {
                 ? "Credentials Mismatch"
                 : semesters[0] === "0"
                   ? "Result Not Available Kindly Contact Campus Director"
-                  : "Nothing to show"}
+                  : ""}
             </div>
           )}
         </Container>

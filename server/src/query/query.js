@@ -2,24 +2,24 @@
 module.exports = {
 	fetchSemesters: `
       SELECT DISTINCT r.semester
-      FROM studentinfo s
+      FROM studentinfo2 s
       LEFT JOIN result r ON s.roll_no = r.roll_no
       WHERE s.roll_no = $1 AND r.acad_year = $2
     `,
-	fetchBlockedResult: `SELECT s.blocked_result FROM studentinfo s WHERE s.roll_no = $1`,
+	fetchBlockedResult: `SELECT s.blocked_result FROM studentinfo2 s WHERE s.roll_no = $1`,
 	fetchAcadYears: `
       SELECT DISTINCT r.acad_year
-      FROM studentinfo s
+      FROM studentinfo2 s
       LEFT JOIN result r ON s.roll_no = r.roll_no
       WHERE s.roll_no = $1
     `,
-	fetchBatch: `SELECT batch FROM studentinfo WHERE roll_no = $1`,
+	fetchBatch: `SELECT batch FROM studentinfo2 WHERE roll_no = $1`,
   fetchAadhar:`SELECT aadhar FROM personalinfo WHERE rollno = $1`,
 	fetchResult: `
       SELECT s.roll_no AS rollno, s.prog, s.campus, r.semester, r.acad_year AS academic_year, 
       s.batch, c.course_code, c.course_name, c.credit, r.marks, r.month_year, p.name, p.mother, 
       p.father, p.guardian, p.abc , p.aadhar
-      FROM studentinfo s 
+      FROM studentinfo2 s 
       LEFT JOIN result r ON s.roll_no = r.roll_no 
       LEFT JOIN course c ON r.course_code = c.course_code 
       LEFT JOIN personalinfo p ON s.roll_no = p.rollno 
@@ -30,7 +30,7 @@ module.exports = {
     fetchCourseDetail:`SELECT course_code, course_name, credit FROM course WHERE course_code = ANY($1)`
     ,
 	insertStudent: `
-      INSERT INTO studentinfo(roll_no, name, prog, campus, batch, blocked_result) 
+      INSERT INTO studentinfo2(roll_no, name, prog, campus, batch, blocked_result) 
       VALUES($1, $2, $3, $4, $5, $6) 
       ON CONFLICT (roll_no) DO UPDATE SET 
       name = $2, prog = $3, campus = $4, batch = $5
@@ -47,7 +47,7 @@ module.exports = {
       ON CONFLICT (roll_no, course_code, acad_year, semester) DO UPDATE SET 
       marks = $5, month_year = $6
     `,
-	updateBlockedResult: `UPDATE studentinfo SET blocked_result = $1 WHERE roll_no = $2`,
+	updateBlockedResult: `UPDATE studentinfo2 SET blocked_result = $1 WHERE roll_no = $2`,
 
   fetchPersonalDetails:`SELECT * FROM personalinfo WHERE rollno = $1`,
   fetchCGPA:`SELECT * FROM student_data WHERE roll_no = $1`,
