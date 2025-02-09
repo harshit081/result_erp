@@ -1,7 +1,7 @@
 "use client";
 import "@fontsource/poppins/600.css";
 import "@fontsource/inter/400.css";
-import React, { useState, useRef, ReactNode, useEffect } from "react";
+import React, { useState, useRef, ReactNode } from "react";
 import ReactToPrint from "react-to-print";
 import {
   Container,
@@ -50,16 +50,6 @@ const StudentDetails = () => {
   const componentRef = useRef<HTMLDivElement>(null);
 
   const [aadhar, setAadhar] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (result && componentRef.current) {
-      const printTrigger = document.createElement("a");
-      printTrigger.style.display = "none";
-      document.body.appendChild(printTrigger);
-      printTrigger.click();
-      document.body.removeChild(printTrigger);
-    }
-  }, [result]);
 
   const renderStudentResults = () => {
     if (!result || !result.semesters || result.semesters.length === 0) {
@@ -519,6 +509,14 @@ const StudentDetails = () => {
           {result ? (
             <>
               <div id="result" ref={myRef} className="min-w-full flex justify-center">
+                <ReactToPrint
+                  trigger={() => (
+                    <Button className="!mt-10 !bg-blue-700 hover:bg-blue-800 !text-white !font-semibold !px-6 !py-3 !rounded-2xl !shadow-md">
+                      Download
+                    </Button>
+                  )}
+                  content={() => componentRef.current!}
+                />
                 <div className="hidden">
                 <div
                   ref={componentRef}
