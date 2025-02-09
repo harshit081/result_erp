@@ -50,20 +50,20 @@ const StudentDetails = () => {
   const componentRef = useRef<HTMLDivElement>(null);
 
   const [aadhar, setAadhar] = useState<number | null>(null);
-  const printRef = useRef<() => void>();
+  const printRef = useRef<ReactToPrint | null>(null);
 
-  const handlePrintRef = (trigger: () => void) => {
-    printRef.current = trigger;
+  const handlePrintRef = (instance: ReactToPrint | null) => {
+    printRef.current = instance;
   };
 
   useEffect(() => {
     if (result && printRef.current) {
-      // Add a small delay to ensure the content is properly rendered
       setTimeout(() => {
-        printRef.current?.();
-      }, 500);
+        printRef.current?.handlePrint(); // Ensure it executes after DOM updates
+      }, 100); // Small delay to allow rendering
     }
   }, [result]);
+  
 
   const renderStudentResults = () => {
     if (!result || !result.semesters || result.semesters.length === 0) {
@@ -234,8 +234,8 @@ const StudentDetails = () => {
                           {eval_gp(mark?.marks) >= 4
                             ? mark.credit
                             : eval_gp(mark?.marks) == -1
-                            ? "-"
-                            : 0}
+                              ? "-"
+                              : 0}
                         </td>
                         <td
                           className={`${commonTableClass} w-[10%] text-[10px] text-center`}
@@ -294,9 +294,9 @@ const StudentDetails = () => {
                     <td className="border !border-black text-[10px] p-2 text-center font-black">
                       {result
                         ? sumUptoIndex(
-                            result.sem_credits,
-                            parseInt(semester) - 1
-                          )
+                          result.sem_credits,
+                          parseInt(semester) - 1
+                        )
                         : "-"}
                     </td>
                     <td className="border !border-black text-[10px] p-2 text-center font-black">
@@ -310,23 +310,23 @@ const StudentDetails = () => {
                     <td className="border !border-black text-[10px] p-2 text-center font-black">
                       {result
                         ? (
-                            sumUptoIndex(result.cipi, parseInt(semester) - 1) /
-                            sumUptoIndex(
-                              result.sem_credits,
-                              parseInt(semester) - 1
-                            )
-                          ).toFixed(2)
+                          sumUptoIndex(result.cipi, parseInt(semester) - 1) /
+                          sumUptoIndex(
+                            result.sem_credits,
+                            parseInt(semester) - 1
+                          )
+                        ).toFixed(2)
                         : "-"}
                     </td>
                     <td className="border !border-black text-[10px] p-2 text-center font-black">
                       {result
                         ? sem_grade(
-                            sumUptoIndex(result.cipi, parseInt(semester) - 1) /
-                              sumUptoIndex(
-                                result.sem_credits,
-                                parseInt(semester) - 1
-                              )
+                          sumUptoIndex(result.cipi, parseInt(semester) - 1) /
+                          sumUptoIndex(
+                            result.sem_credits,
+                            parseInt(semester) - 1
                           )
+                        )
                         : "-"}
                     </td>
                     <td className="border !border-black text-[10px] p-2 text-center font-black align-middle">
@@ -524,34 +524,30 @@ const StudentDetails = () => {
             <>
               <div id="result" ref={myRef} className="min-w-full flex justify-center">
                 <ReactToPrint
-                  trigger={() => (
-                    <Button className="!mt-10 !bg-blue-700 hover:bg-blue-800 !text-white !font-semibold !px-6 !py-3 !rounded-2xl !shadow-md">
-                      Download Again
-                    </Button>
-                  )}
+                  trigger={() => <button className="hidden">Print</button>} // Hidden trigger
                   content={() => componentRef.current!}
+                  ref={handlePrintRef} // Correctly assign the print function
                 />
                 <div className="hidden">
-                <div
-                  ref={componentRef}
-                  className="w-full h-full absolute rounded-xl shadow-lg mt-1 p-8 bg-white text-gray-900"
+                  <div
+                    ref={componentRef}
+                    className="w-full h-full absolute rounded-xl shadow-lg mt-1 p-8 bg-white text-gray-900"
                   >
-                  {renderStudentResults()}
-                </div>
+                    {renderStudentResults()}
                   </div>
+                </div>
               </div>
             </>
           ) : (
             <div
-              className={`mt-10 font-semibold text-lg ${
-                valid ? "text-gray-500" : "text-red-900"
-              }`}
+              className={`mt-10 font-semibold text-lg ${valid ? "text-gray-500" : "text-red-900"
+                }`}
             >
               {!valid
                 ? "Credentials Mismatch"
                 : semesters[0] === "0"
-                ? "Result Not Available Kindly Contact Campus Director"
-                : "Nothing to show"}
+                  ? "Result Not Available Kindly Contact Campus Director"
+                  : "Nothing to show"}
             </div>
           )}
         </Container>
