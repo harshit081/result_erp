@@ -119,16 +119,16 @@ const StudentDetails = () => {
                         {result.father && (
                           <div className="p-0">
                             Father's Name:{" "}
-                            <span className="font-bold uppercase">
-                              {result.father}
+                            <span className="font-bold capitalize">
+                              {result.father.toLowerCase()}
                             </span>
                           </div>
                         )}
                         {result.mother && (
                           <div className="p-0">
                             Mother's Name:{" "}
-                            <span className="font-bold uppercase">
-                              {result.mother}
+                            <span className="font-bold capitalize">
+                              {result.mother.toLowerCase()}
                             </span>
                           </div>
                         )}
@@ -137,7 +137,7 @@ const StudentDetails = () => {
                       result.guardian && (
                         <div className="p-0">
                           Guardian's Name:{" "}
-                          <span className="font-bold">{result.guardian}</span>
+                          <span className="font-bold capitalize">{result.guardian.toLowerCase()}</span>
                         </div>
                       )
                     )}
@@ -499,7 +499,7 @@ const StudentDetails = () => {
                   result
                 )
               }
-              className={`w-[90%] sm:w-[95%] h-[8%] rounded-2xl bg-gradient-to-r from-gray-900 to-black hover:from-gray-700 hover:to-gray-800 text-white`} // Adjusted width for smaller devices
+              className={`w-[90%] sm:w-[95%] h-[8%] !rounded-2xl bg-gradient-to-r from-gray-900 to-black hover:from-gray-700 hover:to-gray-800 text-white`} // Adjusted width for smaller devices
             >
               Submit
             </Button>
@@ -508,21 +508,23 @@ const StudentDetails = () => {
           {/* Result and Print Section */}
           {result ? (
             <>
-              <div id="result" ref={myRef} className="min-w-full">
+              <div id="result" ref={myRef} className="min-w-full flex justify-center">
                 <ReactToPrint
                   trigger={() => (
-                    <Button className="mt-10 bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg shadow-md">
-                      Print PDF
+                    <Button className="!mt-10 !bg-blue-700 hover:bg-blue-800 !text-white !font-semibold !px-6 !py-3 !rounded-2xl !shadow-md">
+                      Download
                     </Button>
                   )}
                   content={() => componentRef.current!}
                 />
+                <div className="hidden">
                 <div
                   ref={componentRef}
-                  className="w-full h-full rounded-xl shadow-lg mt-1 p-8 bg-white text-gray-900"
-                >
-                  {/* {renderStudentResults()} */}
+                  className="w-full h-full absolute rounded-xl shadow-lg mt-1 p-8 bg-white text-gray-900"
+                  >
+                  {renderStudentResults()}
                 </div>
+                  </div>
               </div>
             </>
           ) : (
